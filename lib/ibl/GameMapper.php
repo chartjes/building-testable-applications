@@ -21,5 +21,13 @@ class GameMapper
             VALUES(?, ?, ?, ?,?)";
         $sth = $this->conn->prepare($sql);
         $sth->execute(array($game->week, $game->home_score, $game->away_score, $game->home_team_id, $game->away_team_id));
+
+        $newId = $this->conn->lastInsertId();
+
+        if ($newId) {
+            $game->setId($newId);
+        } else {
+            throw new Exception('DB Error: ' . $this->conn->errorMsg()); 
+        }
     }
 }

@@ -11,8 +11,4 @@ class Game extends BaseModel
     protected $home_team_id;
     protected $away_team_id;
 
-    public function getMaxWeek()
-    {
-        return 0;         
-    }
 }
