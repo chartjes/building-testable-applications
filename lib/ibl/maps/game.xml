@@ -1,0 +1,32 @@
+<game>
+    <field>
+        <name>id</name>
+        <accessor>getId</accessor>
+        <mutator>setId</mutator>
+    </field>
+    <field>
+        <name>week</name>
+        <accessor>getWeek</accessor>
+        <mutator>setWeek</mutator>
+    </field>
+    <field>
+        <name>home_score</name>
+        <accessor>getHomeScore</accessor>
+        <mutator>setHomeScore</mutator>
+    </field>
+    <field>
+        <name>away_score</name>
+        <accessor>getAwayScore</accessor>
+        <mutator>setHomeScore</mutator>
+    </field>
+    <field>
+        <name>home_team_id</name>
+        <accessor>getHomeTeamId</accessor>
+        <mutator>setHomeTeamId</mutator>
+    </field>
+    <field>
+        <name>away_team_id</name>
+        <accessor>getAwayTeamId</accessor>
+        <mutator>setAwayTeamId</mutator>
+    </field>
+</game>
