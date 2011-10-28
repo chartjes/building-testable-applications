@@ -17,6 +17,22 @@ class GameMapper
         }
     }
 
+    public function createGameFromRow($row)
+    {
+        $game = new Game($this);
+
+        foreach ($this->map as $field) {
+            $setProp = (string)$field->mutator;
+            $value = $row[(string)$field->name];
+
+            if ($setProp && $value) {
+                call_user_func(array($game, $setProp), $value); 
+            } 
+        } 
+
+        return $game;
+    }
+
     public function findById($id)
     {
         try {
@@ -26,18 +42,7 @@ class GameMapper
             $row = $sth->fetch();
 
             if ($row) {
-                $game = new Game($this);
-
-                foreach ($this->map as $field) {
-                    $setProp = (string)$field->mutator;
-                    $value = $row[(string)$field->name];
-
-                    if ($setProp && $value) {
-                        call_user_func(array($game, $setProp), $value); 
-                    } 
-                } 
-
-                return $game;
+                return $this->createGameFromRow($row);
             }
         } catch (\PDOException $e) {
             echo "DB Error: " . $e->getMessage(); 
