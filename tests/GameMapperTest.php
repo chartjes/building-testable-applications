@@ -10,7 +10,14 @@ class GameMapperText extends \PHPUnit_Framework_TestCase
     {
         $this->conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
-    
+
+    public function testFindByHomeTeamId()
+    {
+        $mapper = new IBL\GameMapper($this->conn);
+        $results = $mapper->findByHomeTeamId(24);
+        $this->assertEquals(count($results), 81);  
+    }
+
     public function testFindById()
     {
         $game = new IBL\Game();
@@ -28,12 +35,12 @@ class GameMapperText extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('IBL\Game', $newGame);
         $this->assertEquals($game->getId(), $newGame->getId());
     }
-
+    
     public function testFindByWeek()
     {
         $mapper = new IBL\GameMapper($this->conn);
         $results = $mapper->findByWeek(10);
-        $this->assertEquals(count($results), 12);  
+        $this->assertEquals(count($results), 72);  
     }
    
     public function testSave()

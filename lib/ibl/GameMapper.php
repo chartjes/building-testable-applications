@@ -51,13 +51,34 @@ class GameMapper
         return false;
     }
 
+    public function findByHomeTeamId($homeTeamId)
+    {
+        try {
+            $sql = "SELECT * FROM games WHERE home_team_id = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((int)$homeTeamId));
+            $rows = $sth->fetchAll();
+            $games = array();
+
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $games[] = $this->createGameFromRow($row); 
+                }
+            } 
+
+            return $games;
+        } catch (\PDOException $e) {
+            echo 'DB_Error: ' . $e->getMessage(); 
+        }
+    }
+
     public function findByWeek($week)
     {
         try {
             $sql = "SELECT * FROM games WHERE week = ?";
             $sth = $this->conn->prepare($sql);
             $sth->execute(array((int)$week));
-            $rows = $sth->fetch();
+            $rows = $sth->fetchAll();
             $games = array();
 
             if ($rows) {
