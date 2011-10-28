@@ -116,6 +116,15 @@ class GameMapper
 
     public function save(\IBL\Game $game)
     {
+        if ($game->getId()) {
+            $this->update($game); 
+        } else {
+            $this->insert($game); 
+        }
+    }
+
+    protected function insert(\IBL\Game $game) 
+    {
         try {
             // Of course, Postgres has to do things a little differently
             // and we cannot use lastInsertId() so you alter the INSERT
@@ -127,10 +136,35 @@ class GameMapper
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
              
             if ($result['id']) {
-                $game->setId($result['id']);
+                $inserted = $this->findById($result['id']);
+
+                if (method_exists($inserted, 'setId')) {
+                    $game->setId($result['id']);
+                }
             } else {
                 throw new \Exception('Unable to create new Game record'); 
             }
+        } catch(\PDOException $e) {
+            echo "A database problem occurred: " . $e->getMessage(); 
+        }
+         
+    }
+
+    protected function update(\IBL\Game $game)
+    {
+        try {
+            $sql = "UPDATE games SET week = ?, home_score = ?, away_score = ?, home_team_id = ?, away_team_id = ? WHERE id = ?";
+            $sth = $this->conn->prepare($sql);
+            $fields = array('week', 'home_score', 'away_score', 'home_team_id', 'away_team_id', 'id');
+            $binds = array();
+
+            foreach ($fields as $fieldName) {
+                $field = $this->map[$fieldName];
+                $getProp = (string)$field->accessor;
+               $binds[] = $game->$getProp();
+            }
+
+            $response = $sth->execute($binds);
         } catch(\PDOException $e) {
             echo "A database problem occurred: " . $e->getMessage(); 
         }
