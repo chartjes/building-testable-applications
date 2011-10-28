@@ -60,7 +60,7 @@ class GameMapper
             $sql = "INSERT INTO games (week, home_score, away_score, home_team_id, away_team_id) 
                 VALUES(?, ?, ?, ?, ?) RETURNING id";
             $sth = $this->conn->prepare($sql);
-            $response = $sth->execute(array($game->getWeek(), $game->getHome_Score(), $game->getAway_Score(), $game->getHome_Team_Id(), $game->getAway_Team_Id()));
+            $response = $sth->execute(array($game->getWeek(), $game->getHomeScore(), $game->getAwayScore(), $game->getHomeTeamId(), $game->getAwayTeamId()));
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
              
             if ($result['id']) {

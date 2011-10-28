@@ -16,12 +16,12 @@ class BaseModel
 
     public function __call($name, $args)
     {
-        if (preg_match('/^(get|set)(\w+)/', strtolower($name), $match) && $attribute = $this->validateAttribute($match[2])) {
+        if (preg_match('/^(get|set)(\w+)/', $name, $match) && $attribute = $this->validateAttribute($match[2])) {
             if ($match[1] == 'get') {
-                $newAttribute = $this->fromCamelCase($attribute);
+                $newAttribute = $this->inflect($attribute);
                 return $this->$newAttribute;
             } else {
-                $newAttribute = $this->toCamelCase($attribute);
+                $newAttribute = $this->inflect($attribute);
                 $this->$newAttribute = $args[0];
             }
         } else {
@@ -29,28 +29,19 @@ class BaseModel
         }
     }
 
-    protected function fromCamelCase($str) {
+    protected function inflect($str) {
         $str[0] = strtolower($str[0]);
 
         return preg_replace_callback("/([A-Z])/", function($c) {
             return "_" . strtolower($c[1]); 
         }, $str);
     }
-
-    protected function toCamelCase($str, $capitaliseFirstChar = false)
-    {
-        if ($capitaliseFirstChar) {
-            $str[0] = strtoupper($str[0]);
-        }
-
-        return preg_replace_callback('/_([a-z])/', function($c) {
-            return strtoupper($c[1]); 
-        }, $str);
-    }
     
     protected function validateAttribute($name) {
-        if (in_array(strtolower($name), array_keys(get_class_vars(get_class($this))))) {
-            return strtolower($name); 
+        $fieldName = $this->inflect($name);
+
+        if (in_array(strtolower($fieldName), array_keys(get_class_vars(get_class($this))))) {
+            return $fieldName; 
         } 
     }
 }
