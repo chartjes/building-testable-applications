@@ -17,7 +17,7 @@
     <field>
         <name>away_score</name>
         <accessor>getAwayScore</accessor>
-        <mutator>setHomeScore</mutator>
+        <mutator>setAwayScore</mutator>
     </field>
     <field>
         <name>home_team_id</name>

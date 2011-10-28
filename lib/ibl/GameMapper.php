@@ -17,6 +17,35 @@ class GameMapper
         }
     }
 
+    public function findById($id)
+    {
+        try {
+            $sql = "SELECT * FROM games WHERE id = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((int)$id));
+            $row = $sth->fetch();
+
+            if ($row) {
+                $game = new Game($this);
+
+                foreach ($this->map as $field) {
+                    $setProp = (string)$field->mutator;
+                    $value = $row[(string)$field->name];
+
+                    if ($setProp && $value) {
+                        call_user_func(array($game, $setProp), $value); 
+                    } 
+                } 
+
+                return $game;
+            }
+        } catch (\PDOException $e) {
+            echo "DB Error: " . $e->getMessage(); 
+        }
+
+        return false;
+    }
+   
     public function save(\IBL\Game $game)
     {
         try {

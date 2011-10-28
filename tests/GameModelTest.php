@@ -36,4 +36,22 @@ class GameModelTest extends \PHPUnit_Framework_TestCase
         $mapper->save($game);
         $this->assertTrue($game->getId() !== null); 
     }
+
+    public function testFindById()
+    {
+        $game = new IBL\Game();
+        $game->setWeek(28);
+        $game->setHome_Score(1);
+        $game->setAway_Score(0);
+        $game->setHome_Team_Id(1);
+        $game->setAway_Team_Id(0);
+        $this->assertNull($game->getId());
+
+        $mapper = new IBL\GameMapper($this->conn);
+        $mapper->save($game);
+        $this->assertTrue($game->getId() !== null); 
+        $newGame = $mapper->findById($game->getId());
+        $this->assertInstanceOf('IBL\Game', $newGame);
+        $this->assertEquals($game->getId(), $newGame->getId());
+    }
 }
