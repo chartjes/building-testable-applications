@@ -11,6 +11,13 @@ class GameMapperText extends \PHPUnit_Framework_TestCase
         $this->conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
+    public function testFindByAwayTeamId()
+    {
+        $mapper = new IBL\GameMapper($this->conn);
+        $results = $mapper->findByAwayTeamId(24);
+        $this->assertEquals(count($results), 81);  
+    }
+    
     public function testFindByHomeTeamId()
     {
         $mapper = new IBL\GameMapper($this->conn);

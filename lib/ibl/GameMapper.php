@@ -33,6 +33,27 @@ class GameMapper
         return $game;
     }
 
+    public function findByAwayTeamId($awayTeamId)
+    {
+        try {
+            $sql = "SELECT * FROM games WHERE away_team_id = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((int)$awayTeamId));
+            $rows = $sth->fetchAll();
+            $games = array();
+
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $games[] = $this->createGameFromRow($row); 
+                }
+            } 
+
+            return $games;
+        } catch (\PDOException $e) {
+            echo 'DB_Error: ' . $e->getMessage(); 
+        }
+    }
+    
     public function findById($id)
     {
         try {
