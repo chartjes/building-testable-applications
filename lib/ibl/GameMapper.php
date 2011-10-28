@@ -33,6 +33,21 @@ class GameMapper
         return $game;
     }
 
+    public function delete(\IBL\Game $game)
+    {
+        if ($game->getId() == null) {
+            return false; 
+        }
+
+        try {
+            $sql = "DELETE FROM games WHERE id = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((int)$game->getId()));
+        } catch (\PDOException $e) {
+            echo "DB Error: " . $e->getMessage();
+        }     
+    }
+
     public function findByAwayTeamId($awayTeamId)
     {
         try {

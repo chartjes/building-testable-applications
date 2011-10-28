@@ -11,6 +11,25 @@ class GameMapperText extends \PHPUnit_Framework_TestCase
         $this->conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
+    public function testDelete()
+    {
+        $mapper = new IBL\GameMapper($this->conn);
+        $game = new IBL\Game();
+        $game->setWeek(30);
+        $game->setHomeScore(10);
+        $game->setAwayScore(0);
+        $game->setHomeTeamId(1);
+        $game->setAwayTeamId(2);
+        $this->assertNull($game->getId());
+        $mapper->save($game);
+
+        $deleteGame = $mapper->findById($game->getId());
+        $mapper->delete($deleteGame);
+
+        $checkGame = $mapper->findById($game->getId());
+        $this->assertFalse($checkGame);
+    }
+
     public function testFindByAwayTeamId()
     {
         $mapper = new IBL\GameMapper($this->conn);
