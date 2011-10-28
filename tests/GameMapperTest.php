@@ -28,7 +28,14 @@ class GameMapperText extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('IBL\Game', $newGame);
         $this->assertEquals($game->getId(), $newGame->getId());
     }
-    
+
+    public function testFindByWeek()
+    {
+        $mapper = new IBL\GameMapper($this->conn);
+        $results = $mapper->findByWeek(10);
+        $this->assertEquals(count($results), 12);  
+    }
+   
     public function testSave()
     {
         $game = new IBL\Game();

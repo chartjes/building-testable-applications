@@ -50,7 +50,28 @@ class GameMapper
 
         return false;
     }
-   
+
+    public function findByWeek($week)
+    {
+        try {
+            $sql = "SELECT * FROM games WHERE week = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((int)$week));
+            $rows = $sth->fetch();
+            $games = array();
+
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $games[] = $this->createGameFromRow($row); 
+                }
+            } 
+
+            return $games;
+        } catch (\PDOException $e) {
+            echo 'DB_Error: ' . $e->getMessage(); 
+        }
+    }
+
     public function save(\IBL\Game $game)
     {
         try {
