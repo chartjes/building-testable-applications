@@ -70,6 +70,27 @@ class FranchiseMapper
             throw new \Exception("DB Error: " . $e->getMessage()); 
         } 
     }
+    
+    public function findByConferenceDivision($conference, $division)
+    {
+        try {
+            $sql = "SELECT * FROM franchises WHERE conference = ? AND division = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((string) $conference, (string) $division));
+            $rows = $sth->fetchAll();
+            $franchises = array();
+
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $franchises[] = $this->createFranchiseFromRow($row); 
+                } 
+            }
+
+            return $franchises;
+        } catch (\PDOException $e) {
+            throw new \Exception("DB Error: " . $e->getMessage()); 
+        } 
+    }
 
     public function findById($id)
     {
