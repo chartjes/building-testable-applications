@@ -33,6 +33,23 @@ class FranchiseMapper
         return $franchise;
     }
 
+    public function delete(\IBL\Franchise $franchise)
+    {
+        if ($franchise->getId() == null) {
+            return false;
+        } 
+        
+        try {
+            $sql = "DELETE FROM franchises WHERE id = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((int)$franchise->getId()));
+
+            return true;
+        } catch (\PDOException $e) {
+            throw new \Exception("DB Error: " . $e->getMessage());
+        }     
+    }
+
     public function findById($id)
     {
         try {
@@ -64,7 +81,7 @@ class FranchiseMapper
     {
         try {
             $sql = "INSERT INTO franchises (nickname, name, conference, division, ip, id) 
-                VALUES(?, ?, ?, ?, ?, ?) RETURNING id";
+                VALUES(?, ?, ?, ?, ?, ?)";
             $sth = $this->conn->prepare($sql);
             $sth->execute(array($franchise->getNickname(), $franchise->getName(), $franchise->getConference(), $franchise->getDivision(), $franchise->getIp(), $franchise->getId()));
         } catch(\PDOException $e) {
