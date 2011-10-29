@@ -1,0 +1,32 @@
+<franchise>
+    <field>
+        <name>id</name>
+        <accessor>getId</accessor>
+        <mutator>setId</mutator>
+    </field>
+    <field>
+        <name>nickname</name>
+        <accessor>getNickname</accessor>
+        <mutator>setNickname</mutator>
+    </field>
+    <field>
+        <name>name</name>
+        <accessor>getName</accessor>
+        <mutator>setName</mutator>
+    </field>
+    <field>
+        <name>conference</name>
+        <accessor>getConference</accessor>
+        <mutator>setConference</mutator>
+    </field>
+    <field>
+        <name>division</name>
+        <accessor>getDivision</accessor>
+        <mutator>setDivision</mutator>
+    </field>
+    <field>
+        <name>ip</name>
+        <accessor>getIp</accessor>
+        <mutator>setIp</mutator>
+    </field>
+</franchise>
