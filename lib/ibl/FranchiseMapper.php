@@ -23,7 +23,7 @@ class FranchiseMapper
 
         foreach ($this->map as $field) {
             $setProp = (string)$field->mutator;
-            $value = $row[(string)$field->name];
+            $value = trim($row[(string)$field->name]);
 
             if ($setProp && $value) {
                 call_user_func(array($franchise, $setProp), $value); 
@@ -87,6 +87,20 @@ class FranchiseMapper
             }
 
             return $franchises;
+        } catch (\PDOException $e) {
+            throw new \Exception("DB Error: " . $e->getMessage()); 
+        } 
+    }
+
+    public function findByNickname($nickname)
+    {
+        try {
+            $sql = "SELECT * FROM franchises WHERE nickname = ?";
+            $sth = $this->conn->prepare($sql);
+            $sth->execute(array((string) $nickname));
+            $row = $sth->fetch();
+
+            return $this->createFranchiseFromRow($row);
         } catch (\PDOException $e) {
             throw new \Exception("DB Error: " . $e->getMessage()); 
         } 

@@ -45,6 +45,14 @@ class FranchiseMapperTest extends \PHPUnit_Framework_TestCase
         $results = $mapper->findByConferenceDivision('AC', 'West');
         $this->assertEquals(4, count($results));
     } 
+
+    public function testFindByNickname()
+    {
+        $mapper = new IBL\FranchiseMapper($this->conn);
+        $result = $mapper->findByNickname('MAD');
+        $this->assertNotNull($result);
+        $this->assertEquals('Monrovia Madness', $result->getName());
+    }
 }
 
 
