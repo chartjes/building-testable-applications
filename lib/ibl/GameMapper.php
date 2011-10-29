@@ -23,7 +23,7 @@ class GameMapper
 
         foreach ($this->map as $field) {
             $setProp = (string)$field->mutator;
-            $value = $row[(string)$field->name];
+            $value = trim($row[(string)$field->name]);
 
             if ($setProp && $value) {
                 call_user_func(array($game, $setProp), $value); 
