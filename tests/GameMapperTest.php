@@ -2,7 +2,7 @@
 
 include '../bootstrap.php';
 
-class GameMapperText extends \PHPUnit_Framework_TestCase
+class GameMapperTest extends \PHPUnit_Framework_TestCase
 {
     protected $conn;
 
