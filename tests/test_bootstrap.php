@@ -3,7 +3,7 @@
 // set some directory names that we will need
 
 if (!defined('APP_ROOT')) {
-    define('APP_ROOT', __DIR__ . '/');
+    define('APP_ROOT', __DIR__ . '/../');
 }
 
 if (!defined('LIB_ROOT')) {

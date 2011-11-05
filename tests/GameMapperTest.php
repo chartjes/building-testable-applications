@@ -1,6 +1,6 @@
 <?php
 
-include '../bootstrap.php';
+include 'test_bootstrap.php';
 
 class GameMapperTest extends \PHPUnit_Framework_TestCase
 {
