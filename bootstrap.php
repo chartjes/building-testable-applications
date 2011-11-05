@@ -17,3 +17,13 @@ include LIB_ROOT . 'psr0.autoloader.php';
 $loader = new Twig_Loader_Filesystem(APP_ROOT . 'templates');
 $twig = new Twig_Environment($loader);
 
+// Initialize our dependency injection container
+if (apc_exists('di_container')) {
+    $container = apc_fetch('container');
+} else {
+    $container = new \Pimple();
+    $container['dsn'] = 'pgsql:host=localhost;dbname=ibl_stats';
+    $container['dbuser'] = 'stats';
+    $container['dbpasswd'] = 'st@ts=Fun';
+    apc_store('di_container', $container);
+}
