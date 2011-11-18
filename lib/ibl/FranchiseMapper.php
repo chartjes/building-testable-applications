@@ -12,7 +12,7 @@ class FranchiseMapper
         $this->_conn = $_conn; 
 
         // Load our class mapper from the XML config file
-        $fields = simplxml_load_file(LIB_ROOT . 'ibl/maps/franchise.xml');
+        $fields = simplexml_load_file(LIB_ROOT . 'ibl/maps/franchise.xml');
 
         foreach ($fields as $field) {
             $this->_map[(string)$field->name] = $field; 

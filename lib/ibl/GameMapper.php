@@ -2,18 +2,20 @@
 
 namespace IBL;
 
-class GameMapper 
+class GameMapper
 {
-    protected $conn;
-    protected $map = array();
+    protected $_conn;
+    protected $_map = array();
 
     public function __construct($conn)
     {
-        $this->conn = $conn; 
+        $this->_conn = $conn; 
 
         // Load our class mapper from the XML config file
-        foreach (simplexml_load_file(LIB_ROOT . 'ibl/maps/game.xml') as $field) {
-            $this->map[(string)$field->name] = $field; 
+        $fields = simplexml_load_file(LIB_ROOT . 'ibl/maps/game.xml');
+
+        foreach ($fields as $field) {
+            $this->_map[(string)$field->name] = $field; 
         }
     }
 
@@ -21,7 +23,7 @@ class GameMapper
     {
         $game = new Game($this);
 
-        foreach ($this->map as $field) {
+        foreach ($this->_map as $field) {
             $setProp = (string)$field->mutator;
             $value = trim($row[(string)$field->name]);
 
@@ -41,7 +43,7 @@ class GameMapper
 
         try {
             $sql = "DELETE FROM games WHERE id = ?";
-            $sth = $this->conn->prepare($sql);
+            $sth = $this->_conn->prepare($sql);
             $sth->execute(array((int)$game->getId()));
         } catch (\PDOException $e) {
             echo "DB Error: " . $e->getMessage();
@@ -52,7 +54,7 @@ class GameMapper
     {
         try {
             $sql = "SELECT * FROM games WHERE away_team_id = ?";
-            $sth = $this->conn->prepare($sql);
+            $sth = $this->_conn->prepare($sql);
             $sth->execute(array((int)$awayTeamId));
             $rows = $sth->fetchAll();
             $games = array();
@@ -68,12 +70,12 @@ class GameMapper
             echo 'DB_Error: ' . $e->getMessage(); 
         }
     }
-    
+
     public function findById($id)
     {
         try {
             $sql = "SELECT * FROM games WHERE id = ?";
-            $sth = $this->conn->prepare($sql);
+            $sth = $this->_conn->prepare($sql);
             $sth->execute(array((int)$id));
             $row = $sth->fetch();
 
@@ -91,7 +93,7 @@ class GameMapper
     {
         try {
             $sql = "SELECT * FROM games WHERE home_team_id = ?";
-            $sth = $this->conn->prepare($sql);
+            $sth = $this->_conn->prepare($sql);
             $sth->execute(array((int)$homeTeamId));
             $rows = $sth->fetchAll();
             $games = array();
@@ -112,7 +114,7 @@ class GameMapper
     {
         try {
             $sql = "SELECT * FROM games WHERE week = ?";
-            $sth = $this->conn->prepare($sql);
+            $sth = $this->_conn->prepare($sql);
             $sth->execute(array((int)$week));
             $rows = $sth->fetchAll();
             $games = array();
@@ -144,12 +146,21 @@ class GameMapper
             // Of course, Postgres has to do things a little differently
             // and we cannot use lastInsertId() so you alter the INSERT
             // statement to return the insert ID 
-            $sql = "INSERT INTO games (week, home_score, away_score, home_team_id, away_team_id) 
+            $sql = "
+                INSERT INTO games 
+                (week, home_score, away_score, home_team_id, away_team_id) 
                 VALUES(?, ?, ?, ?, ?) RETURNING id";
-            $sth = $this->conn->prepare($sql);
-            $response = $sth->execute(array($game->getWeek(), $game->getHomeScore(), $game->getAwayScore(), $game->getHomeTeamId(), $game->getAwayTeamId()));
+            $sth = $this->_conn->prepare($sql);
+            $binds = array(
+                $game->getWeek(),
+                $game->getHomeScore(),
+                $game->getAwayScore(),
+                $game->getHomeTeamId(),
+                $game->getAwayTeamId() 
+            );
+            $response = $sth->execute($binds);
             $result = $sth->fetch(\PDO::FETCH_ASSOC);
-             
+
             if ($result['id']) {
                 $inserted = $this->findById($result['id']);
 
@@ -162,21 +173,35 @@ class GameMapper
         } catch(\PDOException $e) {
             echo "A database problem occurred: " . $e->getMessage(); 
         }
-         
+
     }
 
     protected function update(\IBL\Game $game)
     {
         try {
-            $sql = "UPDATE games SET week = ?, home_score = ?, away_score = ?, home_team_id = ?, away_team_id = ? WHERE id = ?";
-            $sth = $this->conn->prepare($sql);
-            $fields = array('week', 'home_score', 'away_score', 'home_team_id', 'away_team_id', 'id');
+            $sql = "
+                UPDATE games 
+                SET week = ?, 
+                home_score = ?, 
+                away_score = ?, 
+                home_team_id = ?, 
+                away_team_id = ? 
+                WHERE id = ?";
+            $sth = $this->_conn->prepare($sql);
+            $fields = array(
+                'week', 
+                'home_score', 
+                'away_score', 
+                'home_team_id', 
+                'away_team_id', 
+                'id'
+            );
             $binds = array();
 
             foreach ($fields as $fieldName) {
-                $field = $this->map[$fieldName];
+                $field = $this->_map[$fieldName];
                 $getProp = (string)$field->accessor;
-               $binds[] = $game->$getProp();
+                $binds[] = $game->$getProp();
             }
 
             $response = $sth->execute($binds);
