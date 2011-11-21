@@ -5,12 +5,12 @@ namespace IBL;
 
 class BaseModel
 {
-    protected $id;
+    protected $_id;
 
     public function setId($id) 
     {
-        if (!$this->id) {
-            $this->id = $id; 
+        if (!$this->_id) {
+            $this->_id = $id; 
         } 
     }
 
@@ -33,16 +33,20 @@ class BaseModel
         $str[0] = strtolower($str[0]);
 
         return preg_replace_callback("/([A-Z])/", function($c) {
-            return "_" . strtolower($c[1]); 
+            return strtolower($c[1]); 
         }, $str);
     }
     
     protected function validateAttribute($name) {
-        $fieldName = $this->inflect($name);
+        // Convert first alphanumerica character of the strong to lowercase 
+        $fieldName = '_' . $name;
+        $fieldName{1} = strtolower($fieldName{1}); 
 
-        if (in_array(strtolower($fieldName), array_keys(get_class_vars(get_class($this))))) {
+        if (in_array($fieldName, array_keys(get_class_vars(get_class($this))))) {
             return $fieldName; 
-        } 
+        } else {
+            echo "couldn't find {$fieldName}\n"; 
+        }
     }
 }
 
