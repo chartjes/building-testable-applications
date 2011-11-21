@@ -5,10 +5,10 @@ namespace IBL;
 
 class Game extends BaseModel
 {
-    public $week;
-    public $home_score;
-    public $away_score;
-    public $home_team_id;
-    public $away_team_id;
+    protected $_week;
+    protected $_homeScore;
+    protected $_awayScore;
+    protected $_homeTeamId;
+    protected $_awayTeamId;
 
 }
