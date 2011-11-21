@@ -1,0 +1,22 @@
+<rotation>
+    <field>
+        <name>id</name>
+        <accessor>getId</accessor>
+        <mutator>setId</mutator>
+    </field>
+    <field>
+        <name>week</name>
+        <accessor>getWeek</accessor>
+        <mutator>setWeek</mutator>
+    </field>
+    <field>
+        <name>rotation</name>
+        <accessor>getRotation</accessor>
+        <mutator>setRotation</mutator>
+    </field>
+    <field>
+        <name>franchise_id</name>
+        <accessor>getFranchiseId</accessor>
+        <mutator>setFranchiseId</mutator>
+    </field>
+</rotation>
