@@ -36,7 +36,7 @@ class BaseModel
     
     protected function validateAttribute($name) 
     {
-        // Convert first alphanumerica character of the strong to lowercase 
+        // Convert first alphanumerical character of the string to lowercase 
         $field = '_' . $name;
         $field{1} = strtolower($field{1}); 
 
