@@ -50,6 +50,27 @@ class GameMapper
         }     
     }
 
+    public function findAll()
+    {
+        try {
+            $sql = "SELECT * FROM games WHERE (week >= 1 AND week <= 27)";
+            $sth = $this->_conn->prepare($sql);
+            $sth->execute();
+            $rows = $sth->fetchAll();
+            $games = array();
+
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $games[] = $this->createGameFromRow($row); 
+                }
+            } 
+
+            return $games;
+        } catch (\PDOException $e) {
+            echo 'DB_Error: ' . $e->getMessage(); 
+        }
+    }
+
     public function findByAwayTeamId($awayTeamId)
     {
         try {
