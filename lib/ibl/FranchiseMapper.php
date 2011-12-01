@@ -52,6 +52,27 @@ class FranchiseMapper
         }     
     }
 
+    public function findAll()
+    {
+        try {
+            $sql = "SELECT * FROM franchises";
+            $sth = $this->_conn->prepare($sql);
+            $sth->execute();
+            $rows = $sth->fetchAll();
+            $franchises = array();
+
+            if ($rows) {
+                foreach ($rows as $row) {
+                    $franchises[] = $this->createFranchiseFromRow($row); 
+                } 
+            }
+
+            return $franchises;
+        } catch (\PDOException $e) {
+            throw new \Exception("DB Error: " . $e->getMessage()); 
+        } 
+    }
+
     public function findByConference($conference)
     {
         try {
