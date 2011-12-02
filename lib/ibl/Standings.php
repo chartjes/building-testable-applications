@@ -63,8 +63,68 @@ class Standings
 
     public function generateRegular()
     {
-        // Grab our raw standings and create all our standings variables 
-        extract($this->_calculate());
+        $wins = array();
+        $losses = array();
+        $homeWins = array();
+        $homeLosses = array();
+        $awayWins = array();
+        $awayLosses = array();
+        $confWins = array();
+        $confLosses = array();
+        $divWins = array();
+        $divLosses = array();
+
+        // Initialize all our standings variables
+        foreach ($this->_conferences as $teamId => $value) {
+            $wins[$teamId] = 0;
+            $losses[$teamId] = 0;
+            $homeWins[$teamId] = 0;
+            $homeLosses[$teamId] = 0;
+            $awayWins[$teamId] = 0;
+            $awayLosses[$teamId] = 0;
+            $confWins[$teamId] = 0;
+            $confLosses[$teamId] = 0;
+            $divWins[$teamId] = 0;
+            $divLosses[$teamId] = 0; 
+        }
+
+        // Now loop through each game
+        foreach ($this->_games as $game) {
+            $homeTeamId = $game->getHomeTeamId();
+            $awayTeamId = $game->getAwayTeamId();
+
+            if ($game->getHomeScore() > $game->getAwayScore()) {
+                $wins[$homeTeamId]++;
+                $losses[$awayTeamId]++;
+                $homeWins[$homeTeamId]++;
+                $awayLosses[$awayTeamId]++;
+
+                if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) { 
+                    $confWins[$homeTeamId]++;
+                    $confLosses[$awayTeamId]++;
+                }
+
+                if ($this->_divisions[$homeTeamId] == $this->_divisions[$awayTeamId]) {
+                    $divWins[$homeTeamId]++;
+                    $divLosses[$awayTeamId]++; 
+                }
+            } else {
+                $wins[$awayTeamId] += 1;
+                $losses[$homeTeamId] += 1;
+                $awayWins[$awayTeamId] += 1;
+                $homeLosses[$homeTeamId] += 1;
+                
+                if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) {
+                    $confWins[$awayTeamId]++;
+                    $confLosses[$homeTeamId]++;
+                }
+
+                if ($this->_divisions[$homeTeamId] == $this->_divisions[$awayTeamId]) {
+                    $divWins[$awayTeamId]++;
+                    $divLosses[$homeTeamId]++; 
+                }
+            }
+        }
 
         // Build our standings result, grouping teams by conference
         // and division
@@ -107,86 +167,6 @@ class Standings
         }
 
         return $standingsData;
-    }
-
-    protected function _calculate()
-    { 
-        $wins = array();
-        $losses = array();
-        $homeWins = array();
-        $homeLosses = array();
-        $awayWins = array();
-        $awayLosses = array();
-        $confWins = array();
-        $confLosses = array();
-        $divWins = array();
-        $divLosses = array();
-
-        // Initialize all our standings variables
-        foreach ($this->_conferences as $teamId => $value) {
-            $wins[$teamId] = 0;
-            $losses[$teamId] = 0;
-            $homeWins[$teamId] = 0;
-            $homeLosses[$teamId] = 0;
-            $awayWins[$teamId] = 0;
-            $awayLosses[$teamId] = 0;
-            $confWins[$teamId] = 0;
-            $confLosses[$teamId] = 0;
-            $divWins[$teamId] = 0;
-            $divLosses[$teamId] = 0; 
-        }
-
-        // Now loop through each game
-        foreach ($this->_games as $game) {
-            $homeTeamId = $game->getHomeTeamId();
-            $awayTeamId = $game->getAwayTeamId();
-
-            if ($game->getHomeScore() > $game->getAwayScore()) {
-                $wins[$homeTeamId]++;
-                $losses[$awayTeamId]++;
-                $homeWins[$homeTeamId]++;
-                $awayLosses[$awayTeamId]++;
-
-                if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) {
-                    $confWins[$homeTeamId]++;
-                    $confLosses[$awayTeamId]++;
-                }
-
-                if ($this->_divisions[$homeTeamId] == $this->_divisions[$awayTeamId]) {
-                    $divWins[$homeTeamId]++;
-                    $divLosses[$awayTeamId]++; 
-                }
-            } else {
-                $wins[$awayTeamId] += 1;
-                $losses[$homeTeamId] += 1;
-                $awayWins[$awayTeamId] += 1;
-                $homeLosses[$homeTeamId] += 1;
-                
-                if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) {
-                    $confWins[$awayTeamId]++;
-                    $confLosses[$homeTeamId]++;
-                }
-
-                if ($this->_divisions[$homeTeamId] == $this->_divisions[$awayTeamId]) {
-                    $divWins[$awayTeamId]++;
-                    $divLosses[$homeTeamId]++; 
-                }
-            }
-        }
-
-        return array(
-            'wins' => $wins,
-            'losses' => $losses,
-            'homeWins' => $homeWins,
-            'homeLosses' => $homeLosses,
-            'awayWins' => $awayWins,
-            'awayLosses' => $awayLosses,
-            'confWins' => $confWins,
-            'confLosses' => $confLosses,
-            'divWins' => $divWins,
-            'divLosses' => $divLosses
-        );
-
     }
 
     protected function _sort($standingsData)
