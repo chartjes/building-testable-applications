@@ -1,19 +1,33 @@
 <?php
-
+/**
+ * Model for generating standards
+ */
 namespace IBL;
 
-class Standings 
+class Standings
 {
-    protected $_games;
-    protected $_franchiseMapper;
+    protected $_conferences = array();
+    protected $_divisions = array();
+    protected $_franchises = array();
+    protected $_games = array();
+    protected $_names = array();
+    protected $_nicknames = array();
 
-    public function __construct($games, $franchiseMapper)
+    public function __construct($games, $franchises)
     {
         $this->_games = $games; 
-        $this->_franchiseMapper = $franchiseMapper;
+        $this->_franchises = $franchises;
+
+        foreach ($franchises as $franchise) {
+            $id = $franchise->getId();
+            $this->_conferences[$id] = $franchise->getConference();
+            $this->_divisions[$id] = $franchise->getDivision();
+            $this->_names[$id] = $franchise->getName();
+            $this->_nicknames[$id] = $franchise->getNickname();
+        }
     }
 
-    public function generateBasic()
+    public function generate()
     {
         $rawData = $this->_calculate();
         $basicStandings = array();
@@ -22,10 +36,9 @@ class Standings
         foreach ($rawData as $conference => $divisions) {
             foreach ($divisions as $division => $teams) {
                 foreach ($teams as $team) {
-                    $franchise = $this->_franchiseMapper->findById($team['teamId']);    
                     $basicStandings[$conference][$division][] = array(
                         'teamId' => $team['teamId'],
-                        'nickname' => $franchise->getNickname(),
+                        'nickname' => $this->_nicknames[$team['teamId']],
                         'wins' => $team['wins'],
                         'losses' => $team['losses'],
                         'pct' => $team['pct'],
@@ -42,64 +55,138 @@ class Standings
     {
         return array();
     }
-   
-    public function generateExtended()
+
+    public function generatePlayoff()
     {
-        return array();
+        return array(); 
     }
 
-    protected function _calculate() {
-        // Initialize values for standings
-        $franchises = $this->_franchiseMapper->findAll();
-        $wins = array();
-        $losses = array();
+    public function generateRegular()
+    {
+        // Grab our raw standings and create all our standings variables 
+        extract($this->_calculate());
 
-        foreach ($franchises as $franchise) {
-            $wins[$franchise->getId()] = 0;
-            $losses[$franchise->getId()] = 0;
-        }
-
-        foreach ($this->_games as $game) {
-            if ($game->getHomeScore() > $game->getAwayScore()) {
-                $wins[$game->getHomeTeamId()] += 1;
-                $losses[$game->getAwayTeamId()] += 1;
-            } else {
-                $wins[$game->getAwayTeamId()] += 1;
-                $losses[$game->getHomeTeamId()] += 1;
-                         
-            }
-        }
-
-        // Next we have to group them by conference and division
+        // Build our standings result, grouping teams by conference
+        // and division
+        $standingsData = array();
         $conferences = array('AC', 'NC');
         $divisions = array('East', 'Central', 'West');
-        $standingsData = array();
 
         foreach ($conferences as $conference) {
             foreach ($divisions as $division) {
-                $rawData = array();
-                $franchises = $this->_franchiseMapper->findByConferenceDivision(
-                    $conference,
-                    $division
-                );
+                // Figure out what teams belong to this combo of conference
+                // and division
+                $confTeams = array_keys($this->_conferences, $conference);
+                $divisionTeams = array_keys($this->_divisions, $division);
+                $teams = array_intersect($confTeams, $divisionTeams);
 
-                foreach ($franchises as $franchise) {
-                    $winCount = $wins[$franchise->getId()];
-                    $lossCount = $losses[$franchise->getId()];
+                foreach ($teams as $teamId) {
+                    $winCount = $wins[$teamId];
+                    $lossCount = $losses[$teamId];
                     $pct = $winCount / ($winCount + $lossCount);
-                    $rawData[$franchise->getId()] = array(
-                        'teamId' => $franchise->getId(),
+                    $rawData[$teamId] = array(
+                        'teamId' => $teamId,
+                        'nickname' => $this->_nicknames[$teamId],
+                        'name' => $this->_names[$teamId],
                         'wins' => $winCount,
                         'losses' => $lossCount,
-                        'pct' => $pct 
-                    ); 
+                        'homeWins' => $homeWins[$teamId],
+                        'homeLosses' => $homeLosses[$teamId],
+                        'awayWins' => $awayWins[$teamId],
+                        'awayLosses' => $awayLosses[$teamId],
+                        'confWins' => $confWins[$teamId],
+                        'confLosses' => $confLosses[$teamId],
+                        'divWins' => $divWins[$teamId],
+                        'divLosses' => $divLosses[$teamId],
+                        'pct' => $pct
+                    );
                     $sortedData = $this->_sort($rawData);
                     $standingsData[$conference][$division] = $sortedData;
                 }
-            } 
+            }
         }
 
         return $standingsData;
+    }
+
+    protected function _calculate()
+    { 
+        $wins = array();
+        $losses = array();
+        $homeWins = array();
+        $homeLosses = array();
+        $awayWins = array();
+        $awayLosses = array();
+        $confWins = array();
+        $confLosses = array();
+        $divWins = array();
+        $divLosses = array();
+
+        // Initialize all our standings variables
+        foreach ($this->_conferences as $teamId => $value) {
+            $wins[$teamId] = 0;
+            $losses[$teamId] = 0;
+            $homeWins[$teamId] = 0;
+            $homeLosses[$teamId] = 0;
+            $awayWins[$teamId] = 0;
+            $awayLosses[$teamId] = 0;
+            $confWins[$teamId] = 0;
+            $confLosses[$teamId] = 0;
+            $divWins[$teamId] = 0;
+            $divLosses[$teamId] = 0; 
+        }
+
+        // Now loop through each game
+        foreach ($this->_games as $game) {
+            $homeTeamId = $game->getHomeTeamId();
+            $awayTeamId = $game->getAwayTeamId();
+
+            if ($game->getHomeScore() > $game->getAwayScore()) {
+                $wins[$homeTeamId]++;
+                $losses[$awayTeamId]++;
+                $homeWins[$homeTeamId]++;
+                $awayLosses[$awayTeamId]++;
+
+                if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) {
+                    $confWins[$homeTeamId]++;
+                    $confLosses[$awayTeamId]++;
+                }
+
+                if ($this->_divisions[$homeTeamId] == $this->_divisions[$awayTeamId]) {
+                    $divWins[$homeTeamId]++;
+                    $divLosses[$awayTeamId]++; 
+                }
+            } else {
+                $wins[$awayTeamId] += 1;
+                $losses[$homeTeamId] += 1;
+                $awayWins[$awayTeamId] += 1;
+                $homeLosses[$homeTeamId] += 1;
+                
+                if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) {
+                    $confWins[$awayTeamId]++;
+                    $confLosses[$homeTeamId]++;
+                }
+
+                if ($this->_divisions[$homeTeamId] == $this->_divisions[$awayTeamId]) {
+                    $divWins[$awayTeamId]++;
+                    $divLosses[$homeTeamId]++; 
+                }
+            }
+        }
+
+        return array(
+            'wins' => $wins,
+            'losses' => $losses,
+            'homeWins' => $homeWins,
+            'homeLosses' => $homeLosses,
+            'awayWins' => $awayWins,
+            'awayLosses' => $awayLosses,
+            'confWins' => $confWins,
+            'confLosses' => $confLosses,
+            'divWins' => $divWins,
+            'divLosses' => $divLosses
+        );
+
     }
 
     protected function _sort($standingsData)

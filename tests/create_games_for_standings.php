@@ -6,7 +6,7 @@ echo "Collecting all games in our season...\n";
 $gameMapper = new \IBL\GameMapper($conn);
 $allGames = $gameMapper->findAll();
 echo "Writing games objects into fixture file...\n";
-file_put_contents('./fixtures/games_for_standings.txt', serialize($allGames));
+file_put_contents('./fixtures/games.txt', serialize($allGames));
 echo "Done\n";
 
 

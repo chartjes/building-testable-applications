@@ -1,17 +1,14 @@
 <?php
-
-include 'test_bootstrap.php';
+include './test_bootstrap.php';
 
 class StandingsTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGenerateAll()
+    public function testGenerateRegular()
     {
-        // Load our game objects that have been stored as fixtures
-        $testGames = unserialize(file_get_contents('./fixtures/games_for_standings.txt'));
-        $conn = new \PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
-        $testFranchiseMapper = new \IBL\FranchiseMapper($conn);
-        $testStandings = new \IBL\Standings($testGames, $testFranchiseMapper);;
-        $testResults = $testStandings->generateBasic();
+        $testGames = unserialize(file_get_contents('./fixtures/games.txt'));
+        $testFranchises = unserialize(file_get_contents('./fixtures/franchises.txt'));
+        $testStandings = new \IBL\Standings($testGames, $testFranchises);;
+        $testResults = $testStandings->generateRegular();
         $this->assertTrue(count($testResults) > 0);
         $testTeamResult = $testResults['AC']['East'][0];
         $this->assertEquals(1, $testTeamResult['teamId'], 'Got expected team ID');
@@ -20,5 +17,4 @@ class StandingsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('--', $testTeamResult['gb'], 'Got expected GB total');
     }
 }
-
 
