@@ -18,8 +18,8 @@ class Standings
         if ($week === null) {
             $this->_games = $games; 
         } else {
-            foreach ($this->_games as $game) {
-                if ($game->week <= $week) {
+            foreach ($games as $game) {
+                if ($game->getWeek() <= $week) {
                     $this->_games[] = $game; 
                 }
             } 
@@ -77,12 +77,29 @@ class Standings
         );
     }
 
-    public function generatePlayoff($week = null)
+    public function generatePlayoff()
     {
-        return array(); 
+        $regularStandings = $this->generateRegular();
+        $leaders = array();
+        $magicNumber = array();
+        $wildCard = array();
+        $lead = array();
+        $conferences = array('AC', 'NC');
+        $divisions = array('AC', 'NC');
+
+        foreach ($conferences as $conference) {
+            foreach ($divisions as $division) {
+                $leaders[$conference][$division] =
+                    $regularStandings[$conference][$division][0]; 
+                // Figure out the magic number and lead
+                // for each team
+            }
+        }
+
+        return array();
     }
 
-    public function generateRegular($week = null)
+    public function generateRegular()
     {
         $wins = array();
         $losses = array();
@@ -170,8 +187,8 @@ class Standings
                     } else {
                         $pct = 0; 
                     }
-                    
-                    $rawData[$teamId] = array(
+
+                    $rawData[$conference][$division][$teamId] = array(
                         'teamId' => $teamId,
                         'nickname' => $this->_nicknames[$teamId],
                         'name' => $this->_names[$teamId],
@@ -187,39 +204,45 @@ class Standings
                         'divLosses' => $divLosses[$teamId],
                         'pct' => $pct
                     );
-                    $sortedData = $this->_sort($rawData);
-                    $standingsData[$conference][$division] = $sortedData;
                 }
             }
         }
 
-        return $standingsData;
+        return $this->_sort($rawData);
     }
 
     protected function _sort($standingsData)
     {
         // Sort by winning percentage
-        $column = array();
+        foreach ($standingsData as $conference => $confTeams) {
+            foreach ($confTeams as $division => $teams) {
+                $sortedData = $teams;
+                $column = array();
 
-        foreach ($standingsData as $tmp) {
-            $column[] = $tmp['pct']; 
-        }
+                foreach ($sortedData as $tmp) {
+                    $column[] = $tmp['pct'];
+                }
 
-        array_multisort($column, SORT_DESC, $standingsData);
+                array_multisort($column, SORT_DESC, $sortedData);
+                
+                // Determine how many games teams are behind the leader
+                $leader = true;
 
-        // Determine how many games teams are behind the leader
-        $leader = true;
-
-        foreach ($standingsData as $teamId => $info) {
-            if ($leader == true) {
-                $leader = false;
-                $standingsData[$teamId]['gb'] = '--';
-                $leadW = $info['wins']; 
-                $leadL = $info['losses'];
-            } else {
-                $factor1 = $leadW - $info['wins'];
-                $factor2 = $info['losses'] - $leadL;
-                $standingsData[$teamId]['gb'] = ($factor1 + $factor2) / 2;
+                foreach ($sortedData as $idx => $info) {
+                    $teamId = $info['teamId'];
+                    if ($leader == true) {
+                        $leader = false;
+                        $standingsData[$conference][$division][$teamId]['gb'] 
+                            = '--';
+                        $leadW = $info['wins']; 
+                        $leadL = $info['losses'];
+                    } else {
+                        $factor1 = $leadW - $info['wins'];
+                        $factor2 = $info['losses'] - $leadL;
+                        $standingsData[$conference][$division][$teamId]['gb'] 
+                            = ($factor1 + $factor2) / 2;
+                    }
+                }
             }
         }
 
