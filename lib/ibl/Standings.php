@@ -13,9 +13,18 @@ class Standings
     protected $_names = array();
     protected $_nicknames = array();
 
-    public function __construct($games, $franchises)
+    public function __construct($games, $franchises, $week = null)
     {
-        $this->_games = $games; 
+        if ($week === null) {
+            $this->_games = $games; 
+        } else {
+            foreach ($this->_games as $game) {
+                if ($game->week <= $week) {
+                    $this->_games[] = $game; 
+                }
+            } 
+        }
+
         $this->_franchises = $franchises;
 
         foreach ($franchises as $franchise) {
@@ -68,12 +77,12 @@ class Standings
         );
     }
 
-    public function generatePlayoff()
+    public function generatePlayoff($week = null)
     {
         return array(); 
     }
 
-    public function generateRegular()
+    public function generateRegular($week = null)
     {
         $wins = array();
         $losses = array();
@@ -155,7 +164,13 @@ class Standings
                 foreach ($teams as $teamId) {
                     $winCount = $wins[$teamId];
                     $lossCount = $losses[$teamId];
-                    $pct = $winCount / ($winCount + $lossCount);
+
+                    if (($winCount + $lossCount) != 0) {
+                        $pct = $winCount / ($winCount + $lossCount);
+                    } else {
+                        $pct = 0; 
+                    }
+                    
                     $rawData[$teamId] = array(
                         'teamId' => $teamId,
                         'nickname' => $this->_nicknames[$teamId],
