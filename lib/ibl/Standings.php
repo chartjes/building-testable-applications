@@ -27,33 +27,45 @@ class Standings
         }
     }
 
-    public function generate()
+    public function generateBreakdown()
     {
-        $rawData = $this->_calculate();
-        $basicStandings = array();
+        $wins = array();
+        $losses = array();
+        $standingsData = array();
 
-        // Pull out only the fields we want
-        foreach ($rawData as $conference => $divisions) {
-            foreach ($divisions as $division => $teams) {
-                foreach ($teams as $team) {
-                    $basicStandings[$conference][$division][] = array(
-                        'teamId' => $team['teamId'],
-                        'nickname' => $this->_nicknames[$team['teamId']],
-                        'wins' => $team['wins'],
-                        'losses' => $team['losses'],
-                        'pct' => $team['pct'],
-                        'gb' => $team['gb']
-                    );
+        // Initialize all our variables, except we don't need to set
+        // any values where the home team and road team are equal
+        foreach ($this->_franchises as $awayTeam) {
+            foreach ($this->_franchises as $homeTeam) {
+                if ($awayTeam->getId() !== $homeTeam->getId()) {
+                    $wins[$awayTeam->getId()][$homeTeam->getId()] = 0;
+                    $losses[$awayTeam->getId()][$homeTeam->getId()] = 0; 
                 }
             } 
         }
-        
-        return $basicStandings;
-    }
 
-    public function generateBreakdown()
-    {
-        return array();
+        // Calculate the breakdown wins and losses
+        foreach ($this->_games as $game) {
+            $homeTeamId = $game->getHomeTeamId();
+            $awayTeamId = $game->getAwayTeamId();
+
+            if ($game->getHomeScore() > $game->getAwayScore()) {
+                $wins[$homeTeamId][$awayTeamId]++;
+                $losses[$awayTeamId][$homeTeamId]++;
+            } else {
+                $wins[$awayTeamId][$homeTeamId]++;
+                $losses[$homeTeamId][$awayTeamId]++;
+            } 
+        }        
+
+        // Sort the arrays so that they match up nicely
+        arsort($wins);
+        arsort($losses);
+
+        return array(
+            'wins' => $wins,
+            'losses' => $losses 
+        );
     }
 
     public function generatePlayoff()
@@ -113,7 +125,7 @@ class Standings
                 $losses[$homeTeamId] += 1;
                 $awayWins[$awayTeamId] += 1;
                 $homeLosses[$homeTeamId] += 1;
-                
+
                 if ($this->_conferences[$homeTeamId] == $this->_conferences[$awayTeamId]) {
                     $confWins[$awayTeamId]++;
                     $confLosses[$homeTeamId]++;
