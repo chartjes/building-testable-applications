@@ -84,19 +84,116 @@ class Standings
         $magicNumber = array();
         $wildCard = array();
         $lead = array();
-        $conferences = array('AC', 'NC');
-        $divisions = array('AC', 'NC');
 
-        foreach ($conferences as $conference) {
-            foreach ($divisions as $division) {
-                $leaders[$conference][$division] =
-                    $regularStandings[$conference][$division][0]; 
-                // Figure out the magic number and lead
-                // for each team
+        foreach ($regularStandings as $conference => $confTeams) {
+            foreach ($confTeams as $division => $teams) {
+                $leader = array_slice($teams, 0, 1);
+                $secondTeam = array_slice($teams, 1, 1);
+                $leaders[$conference][$division] = $leader[0];
+                $x = $leader[0]['wins'];
+                $y = $secondTeam[0]['losses'];
+                $magicNumber[$conference][$division] = $secondTeam[0]['gb'];
+
+                if ($magicNumber[$conference][$division] <= 0) {
+                    $magicNumber[$conference][$division] = 'Clinched';
+                }
+
+                $lead[$conference][$division] = $secondTeam[0]['gb'];
+
+                // Add the teams that are not division leaders to 
+                // the list of wild card teams
+                $chaseTeams = array_slice($teams, 1);
+
+                foreach ($chaseTeams as $team) {
+                    $wildCard[$conference][] = $team; 
+                }
+
+            } 
+        }
+
+        // Sort all our teams in order of winning percentage
+        // so we can figure out who the wild card leaders are        
+        foreach ($wildCard as $conference => $teamStandings) {
+            $pct = array();
+            $wins = array();
+            $losses = array();
+            $firstWins = 0;
+            $firstLosses = 0;
+            $secondWins = 0;
+            $secondLosses = 0;
+            $firstGb = array();
+            $secondGb = array();
+            $firstWc = "";
+            $secondWc = "";
+
+            foreach ($teamStandings as $teamStanding) {
+                $pct[$teamStanding['teamId']] = $teamStanding['pct']; 
+                $wins[$teamStanding['teamId']] = $teamStanding['wins'];
+                $losses[$teamStanding['teamId']] = $teamStanding['losses'];
+            }
+
+            arsort($pct);
+
+            // Build our result array of where a team sits in the
+            // wild card races
+            foreach ($pct as $team => $tPct) {
+                if (!$firstWc) {
+                    $firstWc = $team;
+                    $firstGb[$team] = '--';
+                    $secondGb[$team] = '--';
+                    $firstWins = $wins[$team];
+                    $firstLosses = $losses[$team];
+                } else {
+                    if (!$secondWc) {
+                        $secondWc = $team;
+                        $secondGb[$team] = '--';
+                        $firstGb[$team] = (
+                            ($firstWins - $wins[$team]) +
+                            ($losses[$team] - $firstLosses))
+                            / 2;
+                        $secondW = $wins[$team];
+                        $secondL = $wins[$team];
+                    } else {
+                        $firstGb[$team] = (
+                            ($firstWins - $wins[$team]) +
+                            ($losses[$team] - $firstLosses))
+                            / 2;
+                        $secondGb[$team] = (
+                            ($secondWins - $wins[$team]) +
+                            ($losses[$team] - $secondLosses))
+                            / 2;
+                    }
+
+                    if ($firstGb[$team] == 0) {
+                        $firstGb[$team] = '--'; 
+                    }
+
+                    if ($secondGb[$team] == 0) {
+                        $secondGb[$team] = '--'; 
+                    }
+                }
+            }
+
+            $wildCardStandings[$conference] = array();
+
+            foreach ($pct as $team => $tPct) {
+                $wildCardStandings[$conference][] = array(
+                    $team,
+                    $wins[$team],
+                    $losses[$team],
+                    $pct[$team],
+                    $firstGb[$team],
+                    $secondGb[$team]
+                ); 
             }
         }
 
-        return array();
+        return array(
+            'leaders' => $leaders,
+            'wildCardStandings' => $wildCardStandings,
+            'magicNumber' => $magicNumber,
+            'lead' => $lead
+        );
     }
 
     public function generateRegular()
@@ -213,9 +310,11 @@ class Standings
 
     protected function _sort($standingsData)
     {
-        // Sort by winning percentage
+        $newStandingsData = array();
+
         foreach ($standingsData as $conference => $confTeams) {
             foreach ($confTeams as $division => $teams) {
+                // Sort teams by winning percentage in their division
                 $sortedData = $teams;
                 $column = array();
 
@@ -224,29 +323,34 @@ class Standings
                 }
 
                 array_multisort($column, SORT_DESC, $sortedData);
-                
+                $tmp = $sortedData;
+
                 // Determine how many games teams are behind the leader
                 $leader = true;
 
-                foreach ($sortedData as $idx => $info) {
+                foreach ($tmp as $idx => $info) {
                     $teamId = $info['teamId'];
                     if ($leader == true) {
                         $leader = false;
-                        $standingsData[$conference][$division][$teamId]['gb'] 
+                        $sortedData[$idx]['gb'] 
                             = '--';
                         $leadW = $info['wins']; 
                         $leadL = $info['losses'];
                     } else {
-                        $factor1 = $leadW - $info['wins'];
-                        $factor2 = $info['losses'] - $leadL;
-                        $standingsData[$conference][$division][$teamId]['gb'] 
-                            = ($factor1 + $factor2) / 2;
+                        $x = $leadW - $info['wins'];
+                        $y = $info['losses'] - $leadL;
+                        $sortedData[$idx]['gb'] 
+                            = ($x + $y) / 2;
                     }
+                }
+
+                foreach ($sortedData as $team) {
+                    $newStandingsData[$conference][$division][] = $team; 
                 }
             }
         }
 
-        return $standingsData;
+        return $newStandingsData;
     }
 }
 
