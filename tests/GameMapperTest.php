@@ -4,16 +4,20 @@ include 'test_bootstrap.php';
 
 class GameMapperTest extends \PHPUnit_Framework_TestCase
 {
-    protected $conn;
+    protected $_conn;
 
     public function setUp()
     {
-        $this->conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new PDO(
+            'pgsql:host=localhost;dbname=ibl_stats', 
+            'stats', 
+            'st@ts=Fun'
+        ); 
     }
 
     public function testDelete()
     {
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $game = new IBL\Game();
         $game->setWeek(30);
         $game->setHomeScore(10);
@@ -32,14 +36,14 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
 
     public function testFindByAwayTeamId()
     {
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $results = $mapper->findByAwayTeamId(24);
         $this->assertEquals(count($results), 81);  
     }
     
     public function testFindByHomeTeamId()
     {
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $results = $mapper->findByHomeTeamId(24);
         $this->assertEquals(count($results), 81);  
     }
@@ -54,7 +58,7 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         $game->setAwayTeamId(0);
         $this->assertNull($game->getId());
 
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $mapper->save($game);
         $this->assertTrue($game->getId() !== null); 
         $newGame = $mapper->findById($game->getId());
@@ -64,7 +68,7 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
     
     public function testFindByWeek()
     {
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $results = $mapper->findByWeek(10);
         $this->assertEquals(count($results), 72);  
     }
@@ -79,11 +83,9 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         $game->setAwayTeamId(0);
         $this->assertNull($game->getId());
 
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $mapper->save($game);
         $this->assertTrue($game->getId() !== null); 
     }
-
-
 }
 
