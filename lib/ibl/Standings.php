@@ -265,7 +265,7 @@ class Standings
         // and division
         $standingsData = array();
         $conferences = array('AC', 'NC');
-        $divisions = array('East', 'Central', 'West');
+        $divisions = array('West', 'Central', 'East');
 
         foreach ($conferences as $conference) {
             foreach ($divisions as $division) {
