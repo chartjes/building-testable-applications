@@ -1,0 +1,21 @@
+{
+    "name": "Sample Application for Book",
+    "description": "Application used in my book",
+    "keywords": ["php", "testing"],
+    "homepage": "https://github.com/chartjes/building-testable-applications",
+    "type": "application",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Chris Hartjes",
+            "email": "chartjes@littlehart.net"
+        }
+    ],
+    "require": {
+        "twig/twig": "1.*",
+        "twig/extensions": "master-dev"
+    },
+    "autoload": {
+        "psr-0": { "Twig_Extensions_": "lib/Twig/Extensions" }
+    }
+}
