@@ -12,7 +12,7 @@ if (!defined('LIB_ROOT')) {
 // include our autoloader
 include LIB_ROOT . 'psr0.autoloader.php';
 
-// Also include our Composer-driven stuff
+// Also include our Composer stuff
 include APP_ROOT . 'vendor/.composer/autoload.php';
 
 // We are using Twig for templating
