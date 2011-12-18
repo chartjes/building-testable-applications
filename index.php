@@ -9,9 +9,15 @@ $games = $gameMapper->findAll();
 $franchises = $franchiseMapper->findAll();
 $standings = new \IBL\Standings($games, $franchises);
 $regularStandings = $standings->generateRegular();
+$currentWeek = $gameMapper->getCurrentWeek();
+
 
 // Display the data
 echo $twig->render(
     'index.html', 
-    array('standings' => $regularStandings, 'franchises' => $franchises)
+    array(
+        'standings' => $regularStandings, 
+        'franchises' => $franchises,
+        'currentWeek' => $currentWeek
+    )
 );
