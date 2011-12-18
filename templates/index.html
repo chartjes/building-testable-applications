@@ -6,8 +6,38 @@
     <body>
         <p>
         <h3>Internet Baseball League</h3>
+        Standings through week {{ currentWeek }}
         </p>
         <p>
+        <table>
+            <tr>
+                {% for name, conference in standings %}
+                <td>
+                    {% for divName, division in conference %}
+                    <table>
+                        <tr>
+                            <th>{{ name }} {{ divName }}</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>Pct</th>
+                            <th>GB</th>
+
+                        </tr>
+                        {% for team in division %}
+                        <tr>
+                            <td> {{ team.nickname }}</td>
+                            <td> {{ team.wins }}</td>
+                            <td> {{ team.losses }}</td>
+                            <td> {{ "%0.3f"|format(team.pct) }}</td>
+                            <td> {{ team.gb }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+        </table>
         </p>
     </body>
 </html>
