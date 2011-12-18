@@ -29,9 +29,3 @@ $container['db_connection'] = function ($c) {
         'st@ts=Fun'
     );
 };
-$container['franchise_mapper'] = function ($c) {
-    return new \IBL\FranchiseMapper($c['db_connection']);
-};
-
-$mapper = $container['franchise_mapper'];
-
