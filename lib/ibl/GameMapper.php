@@ -152,6 +152,35 @@ class GameMapper
         }
     }
 
+    public function getCurrentWeek()
+    {
+        /**
+         * We use the following algorithm to determine
+         * what the "current week is"
+         *
+         * #1. Get maximum week value for current set of games
+         * #2. Get number of games associated with that week
+         * #3. If the count is > 12 then use max as current week
+         * #4. Otherwise use max - 1 as current week 
+         */
+        $sql = "
+            SELECT week, count(*) 
+            FROM games 
+            WHERE week= (SELECT MAX(week) FROM games) 
+            GROUP BY week";
+        $sth = $this->_conn->prepare($sql);
+        $sth->execute();
+        $result = $sth->fetch();
+        $maxWeek = $result['week'];
+        $maxWeekCount = $result['count'];
+
+        if ($maxWeekCount > 36) {
+            return $maxWeek; 
+        } else {
+            return $maxWeek - 1; 
+        }
+    }
+
     public function save(\IBL\Game $game)
     {
         if ($game->getId()) {
