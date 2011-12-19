@@ -13,7 +13,12 @@ if (!defined('LIB_ROOT')) {
 // include our autoloader
 include LIB_ROOT . 'psr0.autoloader.php';
 
+// also include our libraries installed using Composer
+include APP_ROOT . 'vendor/.composer/autoload.php';
+
 // We are using Twig for templating
 $loader = new Twig_Loader_Filesystem(APP_ROOT . 'templates');
 $twig = new Twig_Environment($loader);
+$twig = new \Twig_Environment($loader, array('debug' => true));
+$twig->addExtension(new \Twig_Extensions_Extension_Debug());
 
