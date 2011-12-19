@@ -14,7 +14,7 @@ if (!defined('LIB_ROOT')) {
 include LIB_ROOT . 'psr0.autoloader.php';
 
 // also include our libraries installed using Composer
-include APP_ROOT . 'vendor/.composer/autoload.php';
+include_once APP_ROOT . 'vendor/.composer/autoload.php';
 
 // We are using Twig for templating
 $loader = new Twig_Loader_Filesystem(APP_ROOT . 'templates');

@@ -4,11 +4,16 @@ include 'test_bootstrap.php';
 
 class GameModelTest extends \PHPUnit_Framework_TestCase
 {
-    protected $conn;
+    protected $_conn;
 
     public function setUp()
     {
-        $this->conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+    }
+
+    public function tearDown()
+    {
+        unset($this->_conn); 
     }
 
     public function testIdOnlySetOnce()
@@ -24,7 +29,7 @@ class GameModelTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveUpdatesDatabase()
     {
-        $mapper = new IBL\GameMapper($this->conn);
+        $mapper = new IBL\GameMapper($this->_conn);
         $game = new IBL\Game();
         $game->setWeek(30);
         $game->setHomeTeamId(25);

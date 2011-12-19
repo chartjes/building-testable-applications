@@ -4,11 +4,16 @@ include 'test_bootstrap.php';
 
 class FranchiseModelTest extends \PHPUnit_Framework_TestCase
 {
-    protected $conn;
+    protected $_conn;
 
     public function setUp()
     {
-        $this->conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+    }
+
+    public function tearDown()
+    {
+        unset($this->_conn);
     }
     
     public function testIdOnlySetOnce()
@@ -24,7 +29,7 @@ class FranchiseModelTest extends \PHPUnit_Framework_TestCase
     
     public function testSaveUpdatesDatabase()
     {
-        $mapper = new IBL\FranchiseMapper($this->conn);
+        $mapper = new IBL\FranchiseMapper($this->_conn);
         $franchise = new IBL\Franchise();
         $franchise->setId(25);
         $franchise->setNickname('TST');

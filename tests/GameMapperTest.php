@@ -15,6 +15,11 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         ); 
     }
 
+    public function tearDown()
+    {
+        unset($this->_conn); 
+    }
+
     public function testDelete()
     {
         $mapper = new IBL\GameMapper($this->_conn);

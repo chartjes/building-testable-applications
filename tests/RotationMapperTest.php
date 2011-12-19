@@ -11,6 +11,11 @@ class RotationMapperTest extends \PHPUnit_Framework_TestCase
         $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
+    public function tearDown()
+    {
+        unset($this->_conn); 
+    }
+
     public function testDelete()
     {
         $mapper = new IBL\RotationMapper($this->_conn);

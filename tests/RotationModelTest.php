@@ -11,6 +11,11 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
         $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
+    public function tearDown()
+    {
+        unset($this->_conn); 
+    }
+
     public function testIdOnlySetOnce()
     {
         $rotation = new IBL\Rotation();
@@ -30,7 +35,7 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
         $rotation->setRotation('Huey, Dewey, Louie');
         $rotation->setFranchiseId(0);
         $mapper->save($rotation);
-        
+         
         $rotation2 = $mapper->findById($rotation->getId());
         $this->assertEquals($rotation->getId(), $rotation2->getId());
         $mapper->delete($rotation);
@@ -47,5 +52,6 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
 
         $rotation2 = $mapper->findById($rotation->getId());
         $this->assertEquals("Shemp, Larry, Moe", $rotation2->getRotation());
+        $mapper->delete($rotation);
     }
 }
