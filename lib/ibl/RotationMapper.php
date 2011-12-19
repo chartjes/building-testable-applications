@@ -107,6 +107,29 @@ class RotationMapper
         }
     }
 
+    public function generateRotations($rotations, $franchises)
+    {
+        if (count($rotations) == 0) {
+            return array(); 
+        }
+        
+        $response = array();
+        $franchiseInfo = array();
+
+        foreach ($franchises as $franchise) {
+            $franchiseInfo[$franchise->getId()] = $franchise->getNickname(); 
+        }
+        
+        foreach ($rotations as $rotation) {
+            $response[$franchiseInfo[$rotation->getFranchiseId()]] =
+                $rotation->getRotation();
+        }
+
+        ksort($response);
+
+        return $response;
+    }
+
     public function save(\IBL\rotation $rotation)
     {
         if ($rotation->getId()) {

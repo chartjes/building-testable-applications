@@ -40,5 +40,18 @@ class RotationMapperTest extends \PHPUnit_Framework_TestCase
         $rotations = $mapper->findByWeek(1);
         $this->assertTrue(count($rotations) > 0);
     }
+
+    public function testGenerateRotations()
+    {
+        $mapper = new \IBL\RotationMapper($this->_conn);
+        $data = file_get_contents('./fixtures/rotations-24.txt');
+        $testRotations = unserialize($data);
+        $data = file_get_contents('./fixtures/franchises.txt');
+        $testFranchises = unserialize($data);
+        $response = $mapper->generateRotations($testRotations, $testFranchises);
+        $testRotation = $response['MAD'];
+        $this->assertEquals(23, count($response));
+        $this->assertTrue($testRotation !== null);
+    }
 }
 
