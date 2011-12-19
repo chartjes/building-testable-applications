@@ -25,11 +25,11 @@
                         </tr>
                         {% for team in division %}
                         <tr>
-                            <td> {{ team.nickname }}</td>
-                            <td> {{ team.wins }}</td>
-                            <td> {{ team.losses }}</td>
-                            <td> {{ "%0.3f"|format(team.pct) }}</td>
-                            <td> {{ team.gb }}</td>
+                            <td><b>{{ team.nickname }}</b></td>
+                            <td>{{ team.wins }}</td>
+                            <td>{{ team.losses }}</td>
+                            <td>{{ "%0.3f"|format(team.pct) }}</td>
+                            <td>{{ team.gb }}</td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -39,6 +39,34 @@
             </tr>
         </table>
         </p>
+        <p>
+        Results for week {{ currentWeek }}
+        </p>
+        <table>
+            <tr>
+            {% for result in currentResults %}
+                <td>
+                    <table>
+                        <tr>
+                            <td><b>{{ result.awayTeam }}</b></td>
+                            {% for score in result.awayScores %}
+                            <td align="right">{{score}}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td><b>{{ result.homeTeam }}</b></td>
+                            {% for score in result.homeScores %}
+                            <td align="right">{{score}}</td>
+                            {% endfor %}
+                        </tr>
+                    </table>
+                </td>
+                {% if loop.index % 4 == 0 %} 
+            </tr>
+            <tr>
+                {% endif %}
+                {% endfor %}
+        </table>
     </body>
 </html>
   
