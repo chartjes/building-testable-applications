@@ -181,6 +181,33 @@ class GameMapper
         }
     }
 
+    public function generateResults($games, $franchises)
+    {
+        $results = array();
+        $franchiseInfo = array();
+
+        // Create our franchise info array and initialize our results
+        // container
+        foreach ($franchises as $franchise) {
+            $franchiseInfo[$franchise->getId()] = $franchise->getNickname();
+            $results[$franchise->getNickname()] = array(
+                'awayScores' => array(),
+                'homeScores' => array()
+            );
+        }
+
+        foreach ($games as $game) {
+            $results[$franchiseInfo[$game->getHomeTeamId()]]['awayScores'][] =
+                (int)$game->getAwayScore();
+            $results[$franchiseInfo[$game->getHomeTeamId()]]['homeScores'][] =
+                (int)$game->getHomeScore();
+        }
+
+        ksort($results);
+
+        return $results;
+    }
+
     public function save(\IBL\Game $game)
     {
         if ($game->getId()) {
