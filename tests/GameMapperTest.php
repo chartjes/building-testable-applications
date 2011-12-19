@@ -87,5 +87,23 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         $mapper->save($game);
         $this->assertTrue($game->getId() !== null); 
     }
+
+    public function testGenerateResults()
+    {
+        // Load a fixture of results for a specific week
+        $data = file_get_contents('./fixtures/games-24.txt');
+        $testGames = unserialize($data);
+        $data = file_get_contents('./fixtures/franchises.txt');
+        $testFranchises = unserialize($data);
+
+        $mapper = new \IBL\GameMapper($this->_conn);
+        $testResults = $mapper->generateResults($testGames, $testFranchises);
+        $testResult = $testResults['MAD'];
+        $expectedResult = array(
+            'awayScores' => array(4, 5, 2),
+            'homeScores' => array(3, 6, 3)
+        );
+        $this->assertEquals($expectedResult, $testResult);
+    }
 }
 
