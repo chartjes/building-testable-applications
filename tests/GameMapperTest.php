@@ -100,6 +100,8 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         $testResults = $mapper->generateResults($testGames, $testFranchises);
         $testResult = $testResults['MAD'];
         $expectedResult = array(
+            'homeTeam' => 'MAD',
+            'awayTeam' => 'BOW',
             'awayScores' => array(4, 5, 2),
             'homeScores' => array(3, 6, 3)
         );

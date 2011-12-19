@@ -190,13 +190,20 @@ class GameMapper
         // container
         foreach ($franchises as $franchise) {
             $franchiseInfo[$franchise->getId()] = $franchise->getNickname();
-            $results[$franchise->getNickname()] = array(
-                'awayScores' => array(),
-                'homeScores' => array()
-            );
         }
 
         foreach ($games as $game) {
+            $homeTeam = $franchiseInfo[$game->getHomeTeamId()];
+            $awayTeam = $franchiseInfo[$game->getAwayTeamId()];
+
+            if (!isset($results[$homeTeam])) {
+                $results[$homeTeam] = array(
+                    'homeTeam' => $homeTeam,
+                    'awayTeam' => $awayTeam,
+                    'homeScores' => array(),
+                    'awayScores' => array()
+                ); 
+            }
             $results[$franchiseInfo[$game->getHomeTeamId()]]['awayScores'][] =
                 (int)$game->getAwayScore();
             $results[$franchiseInfo[$game->getHomeTeamId()]]['homeScores'][] =
