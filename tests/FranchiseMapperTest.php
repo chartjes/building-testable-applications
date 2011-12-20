@@ -8,7 +8,11 @@ class FranchiseMapperTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new PDO(
+            'pgsql:host=localhost;dbname=ibl_stats', 
+            'stats', 
+            'st@ts=Fun'
+        ); 
     }
 
     public function tearDown()
@@ -30,11 +34,17 @@ class FranchiseMapperTest extends \PHPUnit_Framework_TestCase
 
         // Grab a fresh copy of the object and delete it
         $deleteFranchise = $mapper->findById($franchise->getId());
-        $this->assertTrue($mapper->delete($deleteFranchise), "Deleted Franchise record");
+        $this->assertTrue(
+            $mapper->delete($deleteFranchise), 
+            "Deleted Franchise record"
+        );
 
         // Check to see if we actually deleted this record
         $checkFranchise = $mapper->findById($franchise->getId());
-        $this->assertFalse($checkFranchise, "Verified Franchise record deleted");
+        $this->assertFalse(
+            $checkFranchise, 
+            "Verified Franchise record deleted"
+        );
     }
 
     public function testFindByConference()

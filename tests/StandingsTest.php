@@ -77,7 +77,9 @@ class StandingsTest extends \PHPUnit_Framework_TestCase
     public function testGenerateRegularForSeason()
     {
         $testGames = unserialize(file_get_contents('./fixtures/games.txt'));
-        $testFranchises = unserialize(file_get_contents('./fixtures/franchises.txt'));
+        $testFranchises = unserialize(
+            file_get_contents('./fixtures/franchises.txt')
+        );
         $testStandings = new \IBL\Standings($testGames, $testFranchises);
         $testResults = $testStandings->generateRegular();
         $this->assertEquals(

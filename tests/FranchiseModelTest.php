@@ -46,6 +46,9 @@ class FranchiseModelTest extends \PHPUnit_Framework_TestCase
         // Reload Franchise record and compare them
         $franchise2 = $mapper->findById($franchise->getId());
         $this->assertEquals(35, $franchise2->getIp());
+
+        // Clean up the franchise
+        $mapper->delete($franchise);
     }
 
 }

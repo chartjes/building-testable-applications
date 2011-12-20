@@ -44,5 +44,7 @@ class GameModelTest extends \PHPUnit_Framework_TestCase
         
         $game2 = $mapper->findById($game->getId());
         $this->assertEquals(2, $game2->getHomeScore());
+
+        $mapper->delete($game);
     }
 }

@@ -69,6 +69,9 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         $newGame = $mapper->findById($game->getId());
         $this->assertInstanceOf('IBL\Game', $newGame);
         $this->assertEquals($game->getId(), $newGame->getId());
+
+        // Clean up after yourself!
+        $mapper->delete($game);
     }
     
     public function testFindByWeek()
@@ -91,6 +94,8 @@ class GameMapperTest extends \PHPUnit_Framework_TestCase
         $mapper = new IBL\GameMapper($this->_conn);
         $mapper->save($game);
         $this->assertTrue($game->getId() !== null); 
+
+        $mapper->delete($game);
     }
 
     public function testGenerateResults()
