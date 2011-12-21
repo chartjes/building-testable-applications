@@ -1,0 +1,17 @@
+<schedule>
+    <field>
+        <name>week</name>
+        <accessor>getWeek</accessor>
+        <mutator>setWeek</mutator>
+    </field>
+    <field>
+        <name>home</name>
+        <accessor>getHome</accessor>
+        <mutator>setHome</mutator>
+    </field>
+    <field>
+        <name>away</name>
+        <accessor>getAway</accessor>
+        <mutator>setAway</mutator>
+    </field>
+</schedule>
