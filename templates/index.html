@@ -80,6 +80,17 @@
                         {% for team,rotation in currentRotations %}
                         {{ team }} - {{ rotation }}<br>
                         {% endfor %}
+                        <h3>Schedule for Week {{ scheduleWeek }}</h3>
+                        <table>
+                            <tr>
+                                {% for schedule in currentSchedules %}
+                                <td>{{ schedule.getAway }} @ {{ schedule.getHome }}</td>
+                                {% if loop.index % 4 == 0 %}
+                            </tr>
+                            <tr>
+                                {% endif %}
+                                {% endfor %}
+                        </table>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ include 'bootstrap.php';
 $gameMapper = new \IBL\GameMapper($container['db_connection']);
 $franchiseMapper = new \IBL\FranchiseMapper($container['db_connection']);
 $rotationMapper = new \IBL\RotationMapper($container['db_connection']);
+$scheduleMapper = new \IBL\ScheduleMapper($container['db_connection']);
 
 $games = $gameMapper->findAll();
 $franchises = $franchiseMapper->findAll();
@@ -34,6 +35,20 @@ $currentRotations = $rotationMapper->generateRotations(
     $franchises
 );
 
+/**
+ * We need to use some intelligence in deciding what schedules we need to
+ * show. If we have less than half the results in, show the schedule
+ * from the previous week
+ */
+
+if (count($currentResults) < 36) {
+    $scheduleWeek = $currentWeek - 1;
+} else {
+    $scheduleWeek = $currentWeek;
+}
+
+$currentSchedules = $scheduleMapper->findByWeek($scheduleWeek);
+
 // Display the data
 echo $twig->render(
     'index.html', 
@@ -41,8 +56,10 @@ echo $twig->render(
         'currentWeek' => $currentWeek,
         'currentResults' => $currentResults,
         'currentRotations' => $currentRotations,
+        'currentSchedules' => $currentSchedules,
         'franchises' => $franchises,
         'rotationWeek' => $rotationWeek,
+        'scheduleWeek' => $scheduleWeek,
         'standings' => $regularStandings, 
     )
 );
