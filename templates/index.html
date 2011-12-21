@@ -7,15 +7,12 @@
     <body>
         <div id="main" class="container">
             <div class="row">
-                <div class="span12">
+                <div class="span16">
                     <h1 align="center">Internet Baseball League</h1>
                 </div>
                 <div class="row">
-                    <div class="span10">
-                        <p>
-                        Standings through week {{ currentWeek }}
-                        </p>
-                        <p>
+                    <div class="span9">
+                        <h3>Standings through week {{ currentWeek }}</h3>
                         <table>
                             <tr>
                                 {% for name, conference in standings %}
@@ -45,10 +42,13 @@
                                 {% endfor %}
                             </tr>
                         </table>
-                        </p>
-                        <p>
-                        Results for week {{ currentWeek }}
-                        </p>
+                        <h3>Rotations for Week {{ rotationWeek }}</h3>
+                        {% for team,rotation in currentRotations %}
+                        {{ team }} - {{ rotation }}<br>
+                        {% endfor %}
+                    </div>
+                    <div class="span7">
+                        <h3>Results for week {{ currentWeek }}</h3>
                         <table>
                             <tr>
                             {% for result in currentResults %}
@@ -74,17 +74,11 @@
                                 {% endif %}
                                 {% endfor %}
                             </table>
-                    </div>
-                    <div class="span6">
-                        <h3>Rotations for Week {{ rotationWeek }}</h3>
-                        {% for team,rotation in currentRotations %}
-                        {{ team }} - {{ rotation }}<br>
-                        {% endfor %}
                         <h3>Schedule for Week {{ scheduleWeek }}</h3>
                         <table>
                             <tr>
                                 {% for schedule in currentSchedules %}
-                                <td>{{ schedule.getAway }} @ {{ schedule.getHome }}</td>
+                                <td>{{ schedule.away }} @ {{ schedule.home }}</td>
                                 {% if loop.index % 4 == 0 %}
                             </tr>
                             <tr>
