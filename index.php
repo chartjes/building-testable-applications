@@ -41,13 +41,13 @@ $currentRotations = $rotationMapper->generateRotations(
  * from the previous week
  */
 
-if (count($currentResults) < 36) {
+if (count($currentResults) < 12) {
     $scheduleWeek = $currentWeek - 1;
 } else {
     $scheduleWeek = $currentWeek;
 }
 
-$currentSchedules = $scheduleMapper->findByWeek($scheduleWeek);
+$currentSchedules = $scheduleMapper->generateByWeek($scheduleWeek);
 
 // Display the data
 echo $twig->render(
