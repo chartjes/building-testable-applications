@@ -5,7 +5,8 @@ namespace IBL;
 class ScheduleMapper
 {
     protected $_conn;
-    protected $_dbName;
+    protected $_scheduleTable;
+    protected $_teamsTable;
     protected $_map = array();
 
     public function __construct($_conn)
@@ -19,7 +20,8 @@ class ScheduleMapper
             $this->_map[(string)$field->name] = $field; 
         }
 
-        $this->_dbName = 'sched2010';
+        $this->_scheduleTable = 'sched2010';
+        $this->_teamsTable = 'teams2010';
     }
 
     public function createScheduleFromRow($row)
@@ -38,32 +40,10 @@ class ScheduleMapper
         return $schedule;
     }
 
-
-    public function findAll()
-    {
-        try {
-            $sql = "SELECT * FROM {$this->_dbName}";
-            $sth = $this->_conn->prepare($sql);
-            $sth->execute();
-            $rows = $sth->fetchAll();
-            $schedules = array();
-
-            if ($rows) {
-                foreach ($rows as $row) {
-                    $schedules[] = $this->createScheduleFromRow($row); 
-                } 
-            }
-
-            return $schedules;
-        } catch (\PDOException $e) {
-            throw new \Exception("DB Error: " . $e->getMessage()); 
-        } 
-    }
-
     public function findByWeek($week)
     {
         try {
-            $sql = "SELECT * FROM {$this->_dbName} WHERE week = ?";
+            $sql = "SELECT * FROM {$this->_scheduleTable} WHERE week = ?";
             $sth = $this->_conn->prepare($sql);
             $sth->execute(array((int) $week));
             $rows = $sth->fetchAll();
@@ -79,6 +59,41 @@ class ScheduleMapper
         } catch (\PDOException $e) {
             throw new \Exception("DB Error: " . $e->getMessage()); 
         } 
+    }
+
+    public function generateByWeek($week)
+    {
+        $franchiseMap = array();
+        $rawSchedules = $this->findByWeek($week);
+        $schedules = array();
+
+        /**
+         * Due to other dumb mistakes we mapped things in a dumb way compared
+         * to the Franchises table. So every year we have to manually alter
+         * the mapping table every season. One of these days we'll come up 
+         * with a better solution.
+         */
+        $sql = "SELECT * FROM {$this->_teamsTable}";
+        $sth = $this->_conn->prepare($sql);
+        $sth->execute();
+        $rows = $sth->fetchAll();
+
+        foreach ($rows as $row) {
+            $franchiseMap[$row['code']] = $row['ibl']; 
+        }
+
+        foreach ($rawSchedules as $schedule) {
+            $homeTeam = $franchiseMap[$schedule->getHome()];
+            $awayTeam = $franchiseMap[$schedule->getAway()];
+
+            $schedules[$homeTeam] = array(
+                'away' => $franchiseMap[$schedule->getAway()],
+            ); 
+        }
+
+        ksort($schedules);
+
+        return $schedules;
     }
 }
 

@@ -19,30 +19,19 @@ class ScheduleTest extends \PHPUnit_Framework_TestCase
         unset($this->_conn);
     }
 
-    public function testGetAllSchedules()
-    {
-        /**
-         * Normally a schedule should contain 24 * 27 games, or 648 games but
-         * there was a one-game playoff in our test season so it should be 
-         * 649
-         */
-        $mapper = new \IBL\ScheduleMapper($this->_conn);
-        $testSchedules = $mapper->findAll();
-        $this->assertEquals(
-            649, 
-            count($testSchedules),
-            "Found correct number of schedules for entire season"
-        );
-    }
-
     public function testGetSchedulesForWeek()
     {
         $mapper = new \IBL\ScheduleMapper($this->_conn);
-        $testSchedules = $mapper->findByWeek(27);
+        $testSchedules = $mapper->generateByWeek(27);
         $this->assertEquals(
             24,
             count($testSchedules),
             "Found correct number of schedules for a week"
+        );
+        $this->assertEquals(
+            true,
+            array_key_exists('MAD', $testSchedules),
+            "Found MAD in week 27 schedule"
         );
     }
 }
