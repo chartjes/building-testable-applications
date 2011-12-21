@@ -87,7 +87,8 @@ class ScheduleMapper
             $awayTeam = $franchiseMap[$schedule->getAway()];
 
             $schedules[$homeTeam] = array(
-                'away' => $franchiseMap[$schedule->getAway()],
+                'home' => $homeTeam,
+                'away' => $awayTeam,
             ); 
         }
 
