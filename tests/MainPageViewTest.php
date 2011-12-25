@@ -22,7 +22,7 @@ class MainPageViewTest extends \PHPUnit_Framework_TestCase
         unset($this->_twig);
     }
 
-    public function testMainStandings()
+    public function testMainPage()
     {
         $dbConn = new PDO(
             'pgsql:host=localhost;dbname=ibl_stats', 
