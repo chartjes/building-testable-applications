@@ -35,46 +35,37 @@ class MainPageViewTest extends \PHPUnit_Framework_TestCase
         $rotationMapper = new \IBL\RotationMapper($dbConn);
         $scheduleMapper = new \IBL\ScheduleMapper($dbConn);
 
-        $games = $gameMapper->findAll();
-        $franchises = $franchiseMapper->findAll();
+        $games = unserialize(file_get_contents('./fixtures/games.txt'));
+        $franchises = unserialize(
+            file_get_contents('./fixtures/franchises.txt')
+        );
         $standings = new \IBL\Standings($games, $franchises);
         $regularStandings = $standings->generateRegular();
-        $currentWeek = $gameMapper->getCurrentWeek();
+        $currentWeek = 27;
+        $currentGames = unserialize(
+            file_get_contents('./fixtures/games-27.txt')
+        );
         $currentResults = $gameMapper->generateResults(
-            $gameMapper->findByWeek($currentWeek), 
+            $currentGames,
             $franchises
         );
-
-        /**
-         * If we don't have any rotations for the current week, make sure to grab
-         * rotations for the previous week
-         */
-        $rotations = $rotationMapper->findByWeek($currentWeek);
-        $rotationWeek = $currentWeek;
-
-        if (count($rotations) == 0) {
-            $rotations = $rotationMapper->findByWeek($currentWeek - 1);
-            $rotationWeek = $currentWeek - 1;
-        }
-
+        $rotations = unserialize(
+            file_get_contents('./fixtures/rotations-27.txt')
+        );
         $currentRotations = $rotationMapper->generateRotations(
             $rotations,
             $franchises
         );
-
-        /**
-         * We need to use some intelligence in deciding what schedules we need to
-         * show. If we have less than half the results in, show the schedule
-         * from the previous week
-         */
-
-        if (count($currentResults) < 12) {
-            $scheduleWeek = $currentWeek - 1;
-        } else {
-            $scheduleWeek = $currentWeek;
-        }
-
-        $currentSchedules = $scheduleMapper->generateByWeek($scheduleWeek);
+        $rawSchedules = unserialize(
+            file_get_contents('./fixtures/raw-schedules-27.txt')
+        );
+        $franchiseMap = unserialize(
+            file_get_contents('./fixtures/franchise-mappings.txt')
+        );
+        $currentSchedules = $scheduleMapper->generate(
+            $rawSchedules,
+            $franchiseMap
+        );
 
         // Display the data
         $response = $this->_twig->render(
@@ -85,8 +76,8 @@ class MainPageViewTest extends \PHPUnit_Framework_TestCase
                 'currentRotations' => $currentRotations,
                 'currentSchedules' => $currentSchedules,
                 'franchises' => $franchises,
-                'rotationWeek' => $rotationWeek,
-                'scheduleWeek' => $scheduleWeek,
+                'rotationWeek' => $currentWeek,
+                'scheduleWeek' => $currentWeek,
                 'standings' => $regularStandings, 
             )
         );
@@ -94,12 +85,17 @@ class MainPageViewTest extends \PHPUnit_Framework_TestCase
         $resultsHeader = "Results for week 27";
         $rotationsHeader = "Rotations for Week 27";
         $scheduleHeader = "Schedule for Week 27";
-        
+        $rotation = "KC Greinke, CHN Lilly -2, CHN Wells -2"; 
         $this->assertTrue(stripos($response, $standingsHeader) !== false);
         $this->assertTrue(stripos($response, $resultsHeader) !== false);
         $this->assertTrue(stripos($response, $rotationsHeader) !== false);
         $this->assertTrue(stripos($response, $scheduleHeader) !== false);
 
+        // Look for a known team abbreviation
+        $this->assertTrue(stripos($response, "MAD") !== false);
+
+        // Look for a specific rotation to appear
+        $this->assertTrue(stripos($response, $rotation) !== false);
     }
 }
 

@@ -150,6 +150,26 @@ class FranchiseMapper
         return false;
     }
 
+    public function generateMap($teamsTable)
+    {
+        try {
+            $sql = "SELECT * FROM {$teamsTable}";
+            $sth = $this->_conn->prepare($sql);
+            $sth->execute();
+            $rows = $sth->fetchAll();
+
+            foreach ($rows as $row) {
+                $map[$row['code']] = $row['ibl']; 
+            }
+
+            return $map;
+        } catch (\PDOException $e) {
+            echo "DB Error: " . $e->getMessage(); 
+        }
+
+        return false;
+    }
+
     public function save(\IBL\Franchise $franchise)
     {
         if ($this->findById($franchise->getId())) {
