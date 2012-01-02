@@ -47,7 +47,14 @@ if (count($currentResults) < 12) {
     $scheduleWeek = $currentWeek;
 }
 
-$currentSchedules = $scheduleMapper->generateByWeek($scheduleWeek);
+$franchiseMap = $franchiseMapper->generateMap(
+    $scheduleMapper->teamsTable
+);
+$rawSchedule = $scheduleMapper->findByWeek($scheduleWeek);
+$currentSchedules = $scheduleMapper->generate(
+    $rawSchedule,
+    $franchiseMap 
+);
 
 // Display the data
 echo $twig->render(
