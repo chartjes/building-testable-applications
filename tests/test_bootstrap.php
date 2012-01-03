@@ -11,5 +11,5 @@ if (!defined('LIB_ROOT')) {
 }
 
 // include our autoloader
-include LIB_ROOT . 'psr0.autoloader.php';
+include_once LIB_ROOT . 'psr0.autoloader.php';
 
