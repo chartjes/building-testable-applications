@@ -173,13 +173,13 @@ class FranchiseMapper
     public function save(\IBL\Franchise $franchise)
     {
         if ($this->findById($franchise->getId())) {
-            $this->update($franchise); 
+            $this->_update($franchise); 
         } else {
-            $this->insert($franchise); 
+            $this->_insert($franchise); 
         }
     }
 
-    protected function insert(\IBL\Franchise $franchise) 
+    protected function _insert(\IBL\Franchise $franchise) 
     {
         try {
             $sql = "
@@ -201,7 +201,7 @@ class FranchiseMapper
         }
     }
 
-    protected function update(\IBL\Franchise $franchise)
+    protected function _update(\IBL\Franchise $franchise)
     {
         try {
             $sql = "
