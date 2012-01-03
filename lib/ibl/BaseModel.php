@@ -9,6 +9,7 @@ class BaseModel
 
     public function setId($id) 
     {
+        // Never allow the ID for a model to be overwritten
         if (!$this->_id) {
             $this->_id = $id; 
         } 
@@ -16,17 +17,18 @@ class BaseModel
 
     public function __call($name, $args)
     {
-        if (preg_match('/^(get|set)(\w+)/', $name, $match) 
-            && $attribute = $this->validateAttribute($match[2])) {
+        if (preg_match('/^(get|set)(\w+)/', $name, $match)) {
+            $attribute = $this->validateAttribute($match[2]);
+
             if ($match[1] == 'get') {
-                return $this->$attribute;
+                return $this->{$attribute};
             } else {
-                $this->$attribute = $args[0];
+                $this->{$attribute} = $args[0];
             }
         } else {
             throw new \Exception(
                 'Call to undefined ' . 
-                get_class($this) . 
+                __CLASS__ . 
                 '::' . 
                 $name . 
                 '()'
@@ -36,11 +38,14 @@ class BaseModel
     
     protected function validateAttribute($name) 
     {
-        // Convert first alphanumerical character of the string to lowercase 
+        // Convert first character of the string to lowercase 
         $field = '_' . $name;
-        $field{1} = strtolower($field{1}); 
+        $field[1] = strtolower($field[1]); 
 
-        if (in_array($field, array_keys(get_class_vars(get_class($this))))) {
+        // We don't use __CLASS__ here because there are scope problems
+        $currentClass = get_class($this);
+
+        if (in_array($field, array_keys(get_class_vars($currentClass)))) {
             return $field; 
         }
 
