@@ -139,7 +139,7 @@ class RotationMapper
         }
     }
 
-    protected function insert(\IBL\rotation $rotation) 
+    protected function _insert(\IBL\rotation $rotation) 
     {
         try {
             // Of course, Postgres has to do things a little differently
@@ -173,7 +173,7 @@ class RotationMapper
 
     }
 
-    protected function update(\IBL\rotation $rotation)
+    protected function _update(\IBL\rotation $rotation)
     {
         try {
             $sql = "
@@ -194,7 +194,7 @@ class RotationMapper
             foreach ($fields as $fieldName) {
                 $field = $this->_map[$fieldName];
                 $getProp = (string)$field->accessor;
-                $binds[] = $rotation->$getProp();
+                $binds[] = $rotation->{$getProp}();
             }
 
             $response = $sth->execute($binds);
