@@ -1,5 +1,4 @@
 <?php
-
 namespace IBL;
 
 class RotationMapper
@@ -133,9 +132,9 @@ class RotationMapper
     public function save(\IBL\rotation $rotation)
     {
         if ($rotation->getId()) {
-            $this->update($rotation); 
+            $this->_update($rotation); 
         } else {
-            $this->insert($rotation); 
+            $this->_insert($rotation); 
         }
     }
 
