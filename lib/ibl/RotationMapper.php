@@ -6,9 +6,11 @@ class RotationMapper
     protected $_conn;
     protected $_map = array();
 
-    public function __construct($conn)
+    public function __construct($conn = null)
     {
-        $this->_conn = $conn; 
+        if ($conn !== null) {
+            $this->_conn = $conn;
+        }
 
         // Load our class mapper from the XML config file
         $fields = simplexml_load_file(LIB_ROOT . 'ibl/maps/rotation.xml');
