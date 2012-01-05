@@ -11,8 +11,8 @@ class MainPageViewTest extends \PHPUnit_Framework_TestCase
         include APP_ROOT . 'vendor/.composer/autoload.php';
 
         // We are using Twig for templating
-        $loader = new Twig_Loader_Filesystem(APP_ROOT . 'templates');
-        $this->_twig = new Twig_Environment($loader);
+        $loader = new \Twig_Loader_Filesystem(APP_ROOT . 'templates');
+        $this->_twig = new \Twig_Environment($loader);
         $this->_twig = new \Twig_Environment($loader, array('debug' => true));
         $this->_twig->addExtension(new \Twig_Extensions_Extension_Debug());
     }
@@ -24,7 +24,7 @@ class MainPageViewTest extends \PHPUnit_Framework_TestCase
 
     public function testMainPage()
     {
-        $dbConn = new PDO(
+        $dbConn = new \PDO(
             'pgsql:host=localhost;dbname=ibl_stats', 
             'stats',
             'st@ts=Fun'

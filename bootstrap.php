@@ -23,7 +23,7 @@ $twig->addExtension(new \Twig_Extensions_Extension_Debug());
 // Initalize our Dependency Injection Container
 $container = new \Pimple();
 $container['db_connection'] = function ($c) {
-    return new PDO(
+    return new \PDO(
         'pgsql:host=localhost;dbname=ibl_stats', 
         'stats',
         'st@ts=Fun'
