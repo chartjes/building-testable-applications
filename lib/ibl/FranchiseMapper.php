@@ -226,7 +226,7 @@ class FranchiseMapper
             foreach ($fields as $fieldName) {
                 $field = $this->_map[$fieldName];
                 $getProp = (string)$field->accessor;
-                $binds[] = $franchise->$getProp();
+                $binds[] = $franchise->{$getProp}();
             }
 
             $sth->execute($binds);
