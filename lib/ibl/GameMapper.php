@@ -160,7 +160,7 @@ class GameMapper
          *
          * #1. Get maximum week value for current set of games
          * #2. Get number of games associated with that week
-         * #3. If the count is > 12 then use max as current week
+         * #3. If the count is > 36 then use max as current week
          * #4. Otherwise use max - 1 as current week 
          */
         $sql = "
@@ -218,13 +218,13 @@ class GameMapper
     public function save(\IBL\Game $game)
     {
         if ($game->getId()) {
-            $this->update($game); 
+            $this->_update($game); 
         } else {
-            $this->insert($game); 
+            $this->_insert($game); 
         }
     }
 
-    protected function insert(\IBL\Game $game) 
+    protected function _insert(\IBL\Game $game) 
     {
         try {
             // Of course, Postgres has to do things a little differently
@@ -260,7 +260,7 @@ class GameMapper
 
     }
 
-    protected function update(\IBL\Game $game)
+    protected function _update(\IBL\Game $game)
     {
         try {
             $sql = "
@@ -285,7 +285,7 @@ class GameMapper
             foreach ($fields as $fieldName) {
                 $field = $this->_map[$fieldName];
                 $getProp = (string)$field->accessor;
-                $binds[] = $game->$getProp();
+                $binds[] = $game->{$getProp}();
             }
 
             $response = $sth->execute($binds);
