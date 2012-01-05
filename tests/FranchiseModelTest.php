@@ -8,7 +8,7 @@ class FranchiseModelTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new \PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
     public function tearDown()
@@ -18,7 +18,7 @@ class FranchiseModelTest extends \PHPUnit_Framework_TestCase
     
     public function testIdOnlySetOnce()
     {
-        $franchise = new IBL\Franchise();
+        $franchise = new \IBL\Franchise();
         $id = 25;
         $franchise->setId($id);
         $this->assertEquals($id, $franchise->getId());
@@ -29,8 +29,8 @@ class FranchiseModelTest extends \PHPUnit_Framework_TestCase
     
     public function testSaveUpdatesDatabase()
     {
-        $mapper = new IBL\FranchiseMapper($this->_conn);
-        $franchise = new IBL\Franchise();
+        $mapper = new \IBL\FranchiseMapper($this->_conn);
+        $franchise = new \IBL\Franchise();
         $franchise->setId(25);
         $franchise->setNickname('TST');
         $franchise->setName('Test Team');

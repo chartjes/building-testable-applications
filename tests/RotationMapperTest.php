@@ -8,7 +8,7 @@ class RotationMapperTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new \PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
     public function tearDown()
@@ -18,8 +18,8 @@ class RotationMapperTest extends \PHPUnit_Framework_TestCase
 
     public function testDelete()
     {
-        $mapper = new IBL\RotationMapper($this->_conn);
-        $rotation = new IBL\Rotation();
+        $mapper = new \IBL\RotationMapper($this->_conn);
+        $rotation = new \IBL\Rotation();
         $rotation->setWeek(29);
         $rotation->setRotation('Huey, Dewey, Louie');
         $rotation->setFranchiseId(0);
@@ -34,21 +34,22 @@ class RotationMapperTest extends \PHPUnit_Framework_TestCase
 
     public function testFindByFranchiseId()
     {
-        $mapper = new IBL\RotationMapper($this->_conn);
+        $mapper = new \IBL\RotationMapper($this->_conn);
         $rotations = $mapper->findByFranchiseId(1);
         $this->assertTrue(count($rotations) > 0);
     }
 
     public function testFindByWeek()
     {
-        $mapper = new IBL\RotationMapper($this->_conn);
+        $mapper = new \IBL\RotationMapper($this->_conn);
         $rotations = $mapper->findByWeek(1);
         $this->assertTrue(count($rotations) > 0);
     }
 
     public function testGenerateRotations()
     {
-        $mapper = new \IBL\RotationMapper($this->_conn);
+        // We don't pass in the DB connection if we're using fixtures
+        $mapper = new \IBL\RotationMapper();
         $data = file_get_contents('./fixtures/rotations-24.txt');
         $testRotations = unserialize($data);
         $data = file_get_contents('./fixtures/franchises.txt');
@@ -59,4 +60,3 @@ class RotationMapperTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($testRotation !== null);
     }
 }
-

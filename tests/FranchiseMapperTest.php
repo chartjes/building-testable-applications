@@ -8,7 +8,7 @@ class FranchiseMapperTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_conn = new PDO(
+        $this->_conn = new \PDO(
             'pgsql:host=localhost;dbname=ibl_stats', 
             'stats', 
             'st@ts=Fun'
@@ -22,8 +22,8 @@ class FranchiseMapperTest extends \PHPUnit_Framework_TestCase
     
     public function testDelete()
     {
-        $mapper = new IBL\FranchiseMapper($this->_conn);
-        $franchise = new IBL\Franchise();
+        $mapper = new \IBL\FranchiseMapper($this->_conn);
+        $franchise = new \IBL\Franchise();
         $franchise->setId(25);
         $franchise->setNickname('TST');
         $franchise->setName('Test Team');
@@ -49,21 +49,21 @@ class FranchiseMapperTest extends \PHPUnit_Framework_TestCase
 
     public function testFindByConference()
     {
-        $mapper = new IBL\FranchiseMapper($this->_conn);
+        $mapper = new \IBL\FranchiseMapper($this->_conn);
         $results = $mapper->findByConference('AC');
         $this->assertEquals(12, count($results));
     }   
 
     public function testFindByConferenceDivision()
     {
-        $mapper = new IBL\FranchiseMapper($this->_conn);
+        $mapper = new \IBL\FranchiseMapper($this->_conn);
         $results = $mapper->findByConferenceDivision('AC', 'West');
         $this->assertEquals(4, count($results));
     } 
 
     public function testFindByNickname()
     {
-        $mapper = new IBL\FranchiseMapper($this->_conn);
+        $mapper = new \IBL\FranchiseMapper($this->_conn);
         $result = $mapper->findByNickname('MAD');
         $this->assertNotNull($result);
         $this->assertEquals('Monrovia Madness', $result->getName());

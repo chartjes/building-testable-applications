@@ -8,7 +8,7 @@ class GameModelTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new \PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
     public function tearDown()
@@ -18,7 +18,7 @@ class GameModelTest extends \PHPUnit_Framework_TestCase
 
     public function testIdOnlySetOnce()
     {
-        $game = new IBL\Game();
+        $game = new \IBL\Game();
         $id = 10;
         $game->setId($id);
         $this->assertEquals($id, $game->getId());
@@ -29,8 +29,8 @@ class GameModelTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveUpdatesDatabase()
     {
-        $mapper = new IBL\GameMapper($this->_conn);
-        $game = new IBL\Game();
+        $mapper = new \IBL\GameMapper($this->_conn);
+        $game = new \IBL\Game();
         $game->setWeek(30);
         $game->setHomeTeamId(25);
         $game->setAwayTeamId(26);

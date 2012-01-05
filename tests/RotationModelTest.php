@@ -8,7 +8,7 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_conn = new PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
+        $this->_conn = new \PDO('pgsql:host=localhost;dbname=ibl_stats', 'stats', 'st@ts=Fun'); 
     }
 
     public function tearDown()
@@ -18,7 +18,7 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
 
     public function testIdOnlySetOnce()
     {
-        $rotation = new IBL\Rotation();
+        $rotation = new \IBL\Rotation();
         $id = 10;
         $rotation->setId($id);
         $this->assertEquals($id, $rotation->getId());
@@ -29,8 +29,8 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveUpdatesDatabase()
     {
-        $mapper = new IBL\RotationMapper($this->_conn);
-        $rotation = new IBL\Rotation();
+        $mapper = new \IBL\RotationMapper($this->_conn);
+        $rotation = new \IBL\Rotation();
         $rotation->setWeek(29);
         $rotation->setRotation('Huey, Dewey, Louie');
         $rotation->setFranchiseId(0);
@@ -40,8 +40,8 @@ class RotationModelTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($rotation->getId(), $rotation2->getId());
         $mapper->delete($rotation);
 
-        $mapper = new IBL\RotationMapper($this->_conn);
-        $rotation = new IBL\Rotation();
+        $mapper = new \IBL\RotationMapper($this->_conn);
+        $rotation = new \IBL\Rotation();
         $rotation->setWeek(30);
         $rotation->setRotation("Curly, Larry, Moe");
         $rotation->setFranchiseId(0);
